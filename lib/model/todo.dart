@@ -7,6 +7,8 @@ class Todo {
 
   Todo(this._title, this._priority, this._date, [this._description]);
 
+  Todo.empty() : this('', 3, '');
+
   Todo.withId(this._id, this._title, this._priority, this._date,
       [this._description]);
 

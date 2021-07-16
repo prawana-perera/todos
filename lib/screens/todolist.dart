@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos/model/todo.dart';
+import 'package:todos/screens/tododetail.dart';
 import 'package:todos/util/dbhelper.dart';
 
 class TodoList extends StatefulWidget {
@@ -33,7 +34,9 @@ class TodoListState extends State {
             return Scaffold(
               body: _todoListItems(),
               floatingActionButton: FloatingActionButton(
-                onPressed: null,
+                onPressed: () {
+                  _navigateToDetails(Todo.empty());
+                },
                 tooltip: 'Add new Todo',
                 child: new Icon(Icons.add),
               ),
@@ -48,18 +51,21 @@ class TodoListState extends State {
     return ListView.builder(
       itemCount: _count,
       itemBuilder: (BuildContext context, int position) {
+        var todo = _todos[position];
+
         return Card(
           color: Colors.white,
           elevation: 2.0,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: _getPrioritisedColor(_todos[position].priority),
-              child: Text(_todos[position].priority.toString()),
+              backgroundColor: _getPrioritisedColor(todo.priority),
+              child: Text(todo.priority.toString()),
             ),
-            title: Text(_todos[position].title),
-            subtitle: Text(_todos[position].date),
+            title: Text(todo.title),
+            subtitle: Text(todo.date),
             onTap: () {
-              debugPrint("Tapped on ${_todos[position].id.toString()}");
+              debugPrint("Tapped on ${todo.id.toString()}");
+              _navigateToDetails(todo);
             },
           ),
         );
@@ -80,8 +86,6 @@ class TodoListState extends State {
 
   Future<bool> _getTodos() async {
     await _helper.initialiseDb();
-    await _helper.insertTodo(Todo("Go shopping", 1, DateTime.now().toString(), "Need to shop"));
-    await _helper.insertTodo(Todo("Gardening", 3, DateTime.now().toString(), "Plant something"));
     var todos = (await _helper.getTodos())
         .map((data) => Todo.fromObject(data))
         .toList();
@@ -92,5 +96,14 @@ class TodoListState extends State {
     });
 
     return true;
+  }
+
+  void _navigateToDetails(Todo todo) async {
+    var result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => TodoDetail(todo)));
+
+    if(result) {
+      _getTodos();
+    }
   }
 }
