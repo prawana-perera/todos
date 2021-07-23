@@ -33,22 +33,24 @@ class _TodoDetailState extends State {
   void initState() {
     super.initState();
 
-    setState(() {
-      if (this._todo.id != null) {
-        _priority = _todo.priority;
-      } else {
-        _priority = 1;
-        _todo.priority = _priority;
-      }
+    _priority = this._todo.id != null ? _todo.priority : 1;
+    _todo.priority = _priority;
+
+    _titleController.text = _todo.title;
+    _descriptionController.text = _todo.description ??= '';
+
+    _titleController.addListener(() {
+      _todo.title = _titleController.text;
+    });
+
+    _descriptionController.addListener(() {
+      _todo.description = _descriptionController.text;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    _titleController.text = _todo.title;
-    _descriptionController.text = _todo.description ??= '';
     var textStyle = Theme.of(context).textTheme.headline6;
-
     var actionChoices = [menuSave, menuDelete, menuBack];
 
     if (_todo.id == null) {
@@ -60,10 +62,10 @@ class _TodoDetailState extends State {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: Text(_todo.title),
+            title: Text(_todo.title.isEmpty ? 'Create Todo' : _todo.title),
             actions: <Widget>[
               PopupMenuButton(
-                  onSelected: selectAction,
+                  onSelected: _selectAction,
                   itemBuilder: (BuildContext context) => actionChoices
                       .map((String choice) => PopupMenuItem<String>(
                           value: choice, child: Text(choice)))
@@ -88,7 +90,6 @@ class _TodoDetailState extends State {
                       }
                       return null;
                     },
-                    onChanged: (_) => _todo.title = _titleController.text,
                     decoration: InputDecoration(
                         labelText: 'Title',
                         labelStyle: textStyle,
@@ -97,11 +98,9 @@ class _TodoDetailState extends State {
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
-                    child: TextField(
+                    child: TextFormField(
                       controller: _descriptionController,
                       style: textStyle,
-                      onChanged: (_) =>
-                          _todo.description = _descriptionController.text,
                       decoration: InputDecoration(
                           labelText: 'Description',
                           labelStyle: textStyle,
@@ -136,24 +135,32 @@ class _TodoDetailState extends State {
         ));
   }
 
-  void selectAction(String value) {
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+
+    super.dispose();
+  }
+
+  void _selectAction(String value) {
     switch (value) {
       case menuBack:
-        back();
+        _back();
         break;
       case menuDelete:
-        delete();
+        _delete();
         break;
       case menuSave:
-        save();
+        _save();
         break;
       default:
     }
   }
 
-  void delete() async {
+  void _delete() async {
     var result = await dbHelper.deleteTodo(_todo.id!);
-    back();
+    _back();
 
     if (result != 0) {
       AlertDialog alertDialog = AlertDialog(
@@ -165,7 +172,7 @@ class _TodoDetailState extends State {
     }
   }
 
-  void save() async {
+  void _save() async {
     if (_formKey.currentState!.validate()) {
       _todo.date = DateFormat.yMd().format(DateTime.now());
 
@@ -179,11 +186,11 @@ class _TodoDetailState extends State {
         content: Text("Todo '${_todo.title}' Saved"),
         duration: const Duration(seconds: 3),
       ));
-      back();
+      _back();
     }
   }
 
-  void back() {
+  void _back() {
     Navigator.pop(context, true);
   }
 }

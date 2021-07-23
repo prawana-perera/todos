@@ -64,7 +64,6 @@ class TodoListState extends State {
             title: Text(todo.title),
             subtitle: Text(todo.date),
             onTap: () {
-              debugPrint("Tapped on ${todo.id.toString()}");
               _navigateToDetails(todo);
             },
           ),
