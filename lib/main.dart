@@ -12,15 +12,15 @@ class TodoApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: HomePage(),
+      home: HomePage(title: 'TODOs App'),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  final String title = '';
+  final String title ;
 
-  HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key, required this.title}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();

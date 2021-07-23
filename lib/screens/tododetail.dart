@@ -20,12 +20,26 @@ class TodoDetail extends StatefulWidget {
 }
 
 class _TodoDetailState extends State {
-  var _priority = 3;
+  var _priority;
   var _titleController = TextEditingController();
   var _descriptionController = TextEditingController();
   Todo _todo;
 
   _TodoDetailState(this._todo);
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      if(this._todo.id != null) {
+        _priority = _todo.priority;
+      } else {
+        _priority = 1;
+        _todo.priority = _priority;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +109,7 @@ class _TodoDetailState extends State {
                     if (value != null) {
                       setState(() {
                         _priority = int.parse(value);
+                        _todo.priority = _priority;
                       });
                     }
                   },

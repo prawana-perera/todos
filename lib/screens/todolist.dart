@@ -76,11 +76,11 @@ class TodoListState extends State {
   Color _getPrioritisedColor(int priority) {
     switch (priority) {
       case 1:
-        return Colors.red;
+        return Colors.green;
       case 2:
         return Colors.orangeAccent;
       default:
-        return Colors.green;
+        return Colors.red;
     }
   }
 
@@ -89,6 +89,8 @@ class TodoListState extends State {
     var todos = (await _helper.getTodos())
         .map((data) => Todo.fromObject(data))
         .toList();
+
+    todos.sort((a, b) => b.priority.compareTo(a.priority));
 
     setState(() {
       _todos = todos;
