@@ -27,12 +27,14 @@ class _TodoDetailState extends State {
 
   _TodoDetailState(this._todo);
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
 
     setState(() {
-      if(this._todo.id != null) {
+      if (this._todo.id != null) {
         _priority = _todo.priority;
       } else {
         _priority = 1;
@@ -53,73 +55,85 @@ class _TodoDetailState extends State {
       actionChoices = [menuSave, menuBack];
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(_todo.title),
-        actions: <Widget>[
-          PopupMenuButton(
-              onSelected: selectAction,
-              itemBuilder: (BuildContext context) => actionChoices
-                  .map((String choice) =>
-                      PopupMenuItem<String>(value: choice, child: Text(choice)))
-                  .toList())
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(top: 35, left: 10, right: 10),
-        child: ListView(children: <Widget>[
-          Column(
-            children: <Widget>[
-              TextField(
-                controller: _titleController,
-                style: textStyle,
-                onChanged: (_) => _todo.title = _titleController.text,
-                decoration: InputDecoration(
-                    labelText: 'Title',
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 15, bottom: 15),
-                child: TextField(
-                  controller: _descriptionController,
-                  style: textStyle,
-                  onChanged: (_) =>
-                      _todo.description = _descriptionController.text,
-                  decoration: InputDecoration(
-                      labelText: 'Description',
-                      labelStyle: textStyle,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
-                ),
-              ),
-              ListTile(
-                title: DropdownButton<String>(
-                  items: priorityMap.entries
-                      .map((p) => DropdownMenuItem<String>(
-                            child: Text(p.value),
-                            value: p.key.toString(),
-                          ))
-                      .toList(),
-                  style: textStyle,
-                  value: _priority.toString(),
-                  onChanged: (String? value) {
-                    if (value != null) {
-                      setState(() {
-                        _priority = int.parse(value);
-                        _todo.priority = _priority;
-                      });
-                    }
-                  },
-                ),
-              )
+    return Form(
+        key: _formKey,
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(_todo.title),
+            actions: <Widget>[
+              PopupMenuButton(
+                  onSelected: selectAction,
+                  itemBuilder: (BuildContext context) => actionChoices
+                      .map((String choice) => PopupMenuItem<String>(
+                          value: choice, child: Text(choice)))
+                      .toList())
             ],
-          )
-        ]),
-      ),
-    );
+          ),
+          body: Padding(
+            padding: EdgeInsets.only(top: 35, left: 10, right: 10),
+            child: ListView(children: <Widget>[
+              Column(
+                children: <Widget>[
+                  TextFormField(
+                    controller: _titleController,
+                    style: textStyle,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+
+                      if (value.length > 20) {
+                        return 'Please enter title less that 20 chars';
+                      }
+                      return null;
+                    },
+                    onChanged: (_) => _todo.title = _titleController.text,
+                    decoration: InputDecoration(
+                        labelText: 'Title',
+                        labelStyle: textStyle,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15, bottom: 15),
+                    child: TextField(
+                      controller: _descriptionController,
+                      style: textStyle,
+                      onChanged: (_) =>
+                          _todo.description = _descriptionController.text,
+                      decoration: InputDecoration(
+                          labelText: 'Description',
+                          labelStyle: textStyle,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                    ),
+                  ),
+                  ListTile(
+                    title: DropdownButton<String>(
+                      items: priorityMap.entries
+                          .map((p) => DropdownMenuItem<String>(
+                                child: Text(p.value),
+                                value: p.key.toString(),
+                              ))
+                          .toList(),
+                      style: textStyle,
+                      value: _priority.toString(),
+                      onChanged: (String? value) {
+                        if (value != null) {
+                          setState(() {
+                            _priority = int.parse(value);
+                            _todo.priority = _priority;
+                          });
+                        }
+                      },
+                    ),
+                  )
+                ],
+              )
+            ]),
+          ),
+        ));
   }
 
   void selectAction(String value) {
@@ -152,15 +166,21 @@ class _TodoDetailState extends State {
   }
 
   void save() async {
-    _todo.date = DateFormat.yMd().format(DateTime.now());
+    if (_formKey.currentState!.validate()) {
+      _todo.date = DateFormat.yMd().format(DateTime.now());
 
-    if (_todo.id == null) {
-      await dbHelper.insertTodo(_todo);
-    } else {
-      await dbHelper.updateTodo(_todo);
+      if (_todo.id == null) {
+        await dbHelper.insertTodo(_todo);
+      } else {
+        await dbHelper.updateTodo(_todo);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Todo '${_todo.title}' Saved"),
+        duration: const Duration(seconds: 3),
+      ));
+      back();
     }
-
-    back();
   }
 
   void back() {
