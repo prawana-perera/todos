@@ -5,7 +5,9 @@ Learning Flutter
 ## Tasks
 - [X] Basic screens
 - [ ] Setup CI
-    - [ ] Code linting
+    - [ ] Code linting, options:
+        - https://pub.dev/packages/lint
+        - https://pub.dev/packages/lints
 - [ ] Unit Testing, add to CI as well
     - [ ] Coverage
 - [ ] Automated testing on Device Farm or equivalent as part of C
@@ -16,3 +18,12 @@ Learning Flutter
 - [ ] Call API to get data
 - [ ] Authentication
 
+Other setup todo:
+
+Setup on app stores:
+- https://play.google.com/console/about/internal-testing/
+- https://developer.apple.com/testflight/
+
+Code lint and analysis
+- https://medium.com/geekculture/flutter-static-analysis-linting-5fb050128ead
+- 

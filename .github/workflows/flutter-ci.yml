@@ -2,6 +2,8 @@
 # https://github.com/marketplace/actions/flutter-action
 # https://damienaicheh.github.io/flutter/github/actions/2021/05/06/flutter-tests-github-actions-codecov-en.html
 # https://medium.com/mobile-development-group/github-actions-for-flutter-cf02923d7b5d
+# https://petercoding.com/flutter/2021/07/18/using-github-actions-with-flutter/
+# https://www.raywenderlich.com/19407406-continuous-delivery-for-android-using-github-actions
 name: Todo App CI
 
 on:
@@ -12,7 +14,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,3 +29,10 @@ jobs:
           flutter-version: '2.x'
       - name: Restore packages
         run: flutter pub get
+      - name: Check code lint rules
+        run: flutter format --set-exit-if-changed .
+      - name: Run static anaylysis
+        run: flutter analyze .
+      # Enable after fixing tests
+      # - name: Run Unit Tets
+      #  run: flutter test

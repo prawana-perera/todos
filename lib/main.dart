@@ -18,7 +18,7 @@ class TodoApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  final String title ;
+  final String title;
 
   HomePage({Key? key, required this.title}) : super(key: key);
 
