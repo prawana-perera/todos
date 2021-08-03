@@ -1,0 +1,29 @@
+# References:
+# https://github.com/marketplace/actions/flutter-action
+# https://damienaicheh.github.io/flutter/github/actions/2021/05/06/flutter-tests-github-actions-codecov-en.html
+# https://medium.com/mobile-development-group/github-actions-for-flutter-cf02923d7b5d
+name: Todo App CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '15.x'
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.x'
+      - name: Restore packages
+        run: flutter pub get
