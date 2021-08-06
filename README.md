@@ -1,5 +1,5 @@
 # Todo App
-
+[![codecov](https://codecov.io/gh/prawana-perera/todos/branch/main/graph/badge.svg?token=MCE0I80Y4U)](https://codecov.io/gh/prawana-perera/todos)
 Learning Flutter
 
 ## Tasks
