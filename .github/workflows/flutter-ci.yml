@@ -33,6 +33,5 @@ jobs:
         run: flutter format --set-exit-if-changed .
       - name: Run static anaylysis
         run: flutter analyze .
-      # Enable after fixing tests
-      # - name: Run Unit Tets
-      #  run: flutter test
+      - name: Run Unit Tests
+        run: flutter test
