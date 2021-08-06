@@ -34,4 +34,14 @@ jobs:
       - name: Run static anaylysis
         run: flutter analyze .
       - name: Run Unit Tests
-        run: flutter test
+        run: flutter test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: ./coverage1.xml,./coverage2.xml
+          path_to_write_report: ./coverage/codecov_report.txt
+          verbose: true
