@@ -1,6 +1,7 @@
-# Todo App
-[![codecov](https://codecov.io/gh/prawana-perera/todos/branch/main/graph/badge.svg?token=MCE0I80Y4U)](https://codecov.io/gh/prawana-perera/todos)
+# Todo App | 
 Learning Flutter
+
+[![codecov](https://codecov.io/gh/prawana-perera/todos/branch/main/graph/badge.svg?token=MCE0I80Y4U)](https://codecov.io/gh/prawana-perera/todos)
 
 ## Tasks
 - [X] Basic screens
@@ -26,4 +27,3 @@ Setup on app stores:
 
 Code lint and analysis
 - https://medium.com/geekculture/flutter-static-analysis-linting-5fb050128ead
-- 
