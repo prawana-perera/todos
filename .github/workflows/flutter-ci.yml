@@ -31,8 +31,8 @@ jobs:
         run: flutter pub get
       - name: Check code lint rules
         run: flutter format --set-exit-if-changed .
-      - name: Run static anaylysis
-        run: flutter analyze .
+#      - name: Run static anaylysis
+#        run: flutter analyze .
       - name: Run Unit Tests
         run: flutter test --coverage
       - name: Upload coverage to Codecov
