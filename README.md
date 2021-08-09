@@ -5,6 +5,9 @@ Learning Flutter
 
 ## Tasks
 - [X] Basic screens
+- [ ] Redo app persistence
+    - [ ] get_storage?
+    - [ ] moor?
 - [ ] Setup CI
     - [ ] Code linting, options:
         - https://pub.dev/packages/lint
