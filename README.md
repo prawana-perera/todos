@@ -8,6 +8,8 @@ Learning Flutter
 - [ ] Redo app persistence
     - [ ] get_storage?
     - [ ] moor?
+- [ ] State management
+    - [ ] GetX?
 - [ ] Setup CI
     - [ ] Code linting, options:
         - https://pub.dev/packages/lint
