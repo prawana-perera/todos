@@ -45,3 +45,10 @@ jobs:
           directory: ./coverage/
           fail_ci_if_error: true
           verbose: true
+      - name: Build APK
+        run: flutter build apk
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-release.apk
