@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:todos/screens/todolist.dart';
+import 'package:todos/screens/todo_list.dart';
 
 void main() => runApp(TodoApp());
 

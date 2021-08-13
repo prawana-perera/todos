@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/model/todo.dart';
-import 'package:todos/util/dbhelper.dart';
+import 'package:todos/util/db_helper.dart';
 
 final dbHelper = DbHelper();
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
