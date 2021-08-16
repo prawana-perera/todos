@@ -5,6 +5,7 @@
 # https://petercoding.com/flutter/2021/07/18/using-github-actions-with-flutter/
 # https://www.raywenderlich.com/19407406-continuous-delivery-for-android-using-github-actions
 # https://medium.com/@iqan/continuously-releasing-flutter-app-to-play-store-using-github-actions-eca2f5f6e996
+# https://blog.codemagic.io/ci-cd-for-flutter-with-fastlane-codemagic/
 name: Todo App CI
 
 on:

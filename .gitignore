@@ -50,3 +50,5 @@ coverage
 
 # Temp work around for Flutter code coverage issue - https://github.com/flutter/flutter/issues/27997
 /test/coverage_fixer_test.dart
+/google-play.json
+/fastlane
