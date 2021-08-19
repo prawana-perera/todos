@@ -55,3 +55,7 @@ bundletool install-apks \
 ```
 
 Code coverage - https://app.codecov.io/gh/prawana-perera/todos
+
+### Reference Projects
+- https://github.com/Albert221/FastShopping/
+- https://github.com/flutter/gallery

@@ -14,8 +14,12 @@
 name: Todos Beta Release
 
 on:
-  release:
-    types: [prereleased]
+  push:
+    branches:
+      - release/beta/*
+  pull_request:
+    branches: 
+      - release/beta/*
 
 jobs:
   build-and-test:
