@@ -63,7 +63,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
       - name: Build App Bundle
-        run: flutter build appbundle -v --build-name ${{BUILD_NAME}} --build-number ${{BUILD_NUMBER}}
+        run: flutter build appbundle -v --build-name $BUILD_NAME --build-number $BUILD_NUMBER
         env:
           BUILD_NAME: 1.0.${{ github.run_number }}-beta
           BUILD_NUMBER: ${{ github.run_number }}
