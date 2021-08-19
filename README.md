@@ -53,3 +53,5 @@ Install APK to device:
 bundletool install-apks \
 --apks=<path_to_generated_app_apks_from_buildtool>
 ```
+
+Code coverage - https://app.codecov.io/gh/prawana-perera/todos

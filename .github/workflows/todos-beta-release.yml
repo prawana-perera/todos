@@ -1,0 +1,85 @@
+# References:
+# https://github.com/marketplace/actions/flutter-action
+# https://damienaicheh.github.io/flutter/github/actions/2021/05/06/flutter-tests-github-actions-codecov-en.html
+# https://medium.com/mobile-development-group/github-actions-for-flutter-cf02923d7b5d
+# https://petercoding.com/flutter/2021/07/18/using-github-actions-with-flutter/
+# https://www.raywenderlich.com/19407406-continuous-delivery-for-android-using-github-actions
+# https://medium.com/@iqan/continuously-releasing-flutter-app-to-play-store-using-github-actions-eca2f5f6e996
+# https://blog.codemagic.io/ci-cd-for-flutter-with-fastlane-codemagic/
+
+# TODOs:
+# cache dependencies for flutter/dart and ruby
+# work out better way of doing versioning the app bundle
+
+name: Todos Beta Release
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '15.x'
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.2.0'
+          channel: 'stable'
+      - name: Restore packages
+        run: flutter pub get
+      - name: Check code lint rules
+        run: flutter format --set-exit-if-changed .
+      - name: Run static anaylysis
+        run: flutter analyze .
+      - name: Run Flutter code coverage workaround
+        run: ./flutter-test-coverage-fix.sh
+      - name: Run Unit Tests
+        run: flutter test --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+          fail_ci_if_error: true
+          verbose: true
+      - name: Configure Keystore for Android
+        run: |
+          echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
+          echo "storeFile=upload-keystore.jks" >> key.properties
+          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
+          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
+          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+        env:
+          PLAY_STORE_UPLOAD_KEY: ${{ secrets.PLAY_STORE_UPLOAD_KEY }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+        working-directory: android
+      - name: Build App Bundle
+        run: flutter build appbundle -v --build-name ${{BUILD_NAME}} --build-number ${{BUILD_NUMBER}}
+        env:
+          BUILD_NAME: 1.0.${{ github.run_number }}-beta
+          BUILD_NUMBER: ${{ github.run_number }}
+      - name: Upload App Bundle Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-app-bundle
+          path: build/app/outputs/bundle/release/app-release.aab
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+          working-directory: android
+      - name: Deploy to PlayStore Beta track
+        run: bundle exec fastlane beta
+        env:
+          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+        working-directory: android
