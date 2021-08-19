@@ -10,6 +10,7 @@
 # TODOs:
 # cache dependencies for flutter/dart and ruby
 # work out better way of doing versioning the app bundle
+# TODO split into parallel tasks, for example test for different platforms can run in parallel
 
 name: Todos Beta Release
 
@@ -22,7 +23,7 @@ on:
       - release/beta/*
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
