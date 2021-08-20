@@ -30,6 +30,7 @@ platform :android do
     )
   end
 
+  desc "Show versions"
   lane :versions do
     google_play_track_version_codes(
       track: 'todos-test-track',
