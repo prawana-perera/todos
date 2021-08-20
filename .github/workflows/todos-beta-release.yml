@@ -18,9 +18,6 @@ on:
   push:
     branches:
       - release/beta/*
-  pull_request:
-    branches: 
-      - release/beta/*
 
 jobs:
   build-test-deploy:
