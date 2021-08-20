@@ -29,4 +29,11 @@ platform :android do
       json_key_data: ENV['PLAY_STORE_CONFIG_JSON'],
     )
   end
+
+  lane :versions do
+    google_play_track_version_codes(
+      track: 'todos-test-track',
+      json_key_data: ENV['PLAY_STORE_CONFIG_JSON'],
+    )
+  end
 end
