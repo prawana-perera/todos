@@ -26,6 +26,11 @@ Runs all the tests
 fastlane android beta
 ```
 Submit a new beta build to Google Play
+### android versions
+```
+fastlane android versions
+```
+
 
 ----
 

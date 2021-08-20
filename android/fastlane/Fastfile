@@ -27,6 +27,16 @@ platform :android do
       track: 'todos-test-track',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CONFIG_JSON'],
+      version_code: ENV['BUILD_NUMBER'],
+      version_name: ENV['BUILD_NAME']
+    )
+  end
+
+  desc "Show versions"
+  lane :versions do
+    google_play_track_version_codes(
+      track: 'todos-test-track',
+      json_key_data: ENV['PLAY_STORE_CONFIG_JSON'],
     )
   end
 end
