@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:todos/screens/todo_detail.dart';
 import 'package:todos/src/database/database.dart';
+
+// This is our global ServiceLocator
+GetIt getIt = GetIt.instance;
 
 class TodoList extends StatefulWidget {
   @override
@@ -11,8 +15,10 @@ class TodoListState extends State {
   Future<bool>? _todosFuture;
   List<Todo> _todos = [];
 
-  TodosDatabase db = TodosDatabase();
+  final TodosDatabase _db;
   int _count = 0;
+
+  TodoListState(): this._db = getIt<TodosDatabase>();
 
   @override
   void initState() {
@@ -83,12 +89,7 @@ class TodoListState extends State {
   }
 
   Future<bool> _getTodos() async {
-    // await _helper.initialiseDb();
-    // var todos = (await _helper.getTodos())
-    //     .map((data) => Todo.fromObject(data))
-    //     .toList();
-
-    var todos = await db.getAllTodos();
+    var todos = await _db.getAllTodos();
     todos.sort((a, b) => b.priority.compareTo(a.priority));
 
     setState(() {

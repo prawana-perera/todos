@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:todos/src/database/database.dart';
 
-final db = TodosDatabase();
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
 const menuSave = 'Save and Back';
 const menuDelete = 'Delete';
 const menuBack = 'Back';
+
+// This is our global ServiceLocator
+GetIt getIt = GetIt.instance;
 
 class TodoDetail extends StatefulWidget {
   final Todo? _todo;
@@ -24,9 +27,11 @@ class _TodoDetailState extends State {
   var _actionChoices = [menuSave, menuDelete, menuBack];
   var _pageTitle;
 
+  final TodosDatabase _db;
+
   Todo? _todo;
 
-  _TodoDetailState(this._todo);
+  _TodoDetailState(this._todo): this._db = getIt<TodosDatabase>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -153,7 +158,7 @@ class _TodoDetailState extends State {
   }
 
   void _delete() async {
-    var result = await db.deleteTodo(this._todo!);
+    var result = await _db.deleteTodo(this._todo!);
     _back();
 
     if (result != 0) {
@@ -178,7 +183,7 @@ class _TodoDetailState extends State {
               updatedAt: now
         );
 
-        await db.addTodo(todo);
+        await _db.addTodo(todo);
       } else {
         Todo todo = _todo!.copyWith(
           title: _titleController.text,
@@ -187,7 +192,7 @@ class _TodoDetailState extends State {
           updatedAt: now
         );
 
-        await db.updateTodo(todo);
+        await _db.updateTodo(todo);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
