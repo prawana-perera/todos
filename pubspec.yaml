@@ -24,12 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  # TODO: add versions
-  moor: # use the latest version
-  sqlite3_flutter_libs: # Also use the latest version.
-  path_provider:
-  path:
-  get_it:
+  moor: ^4.5.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.0.2
+  path: ^1.8.0
+  get_it: ^7.2.0
 
 
   # The following adds the Cupertino Icons font to your application.
