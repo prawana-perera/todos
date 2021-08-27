@@ -31,7 +31,7 @@ class _TodoDetailState extends State {
 
   Todo? _todo;
 
-  _TodoDetailState(this._todo): this._db = getIt<TodosDatabase>();
+  _TodoDetailState(this._todo) : this._db = getIt<TodosDatabase>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -177,20 +177,18 @@ class _TodoDetailState extends State {
 
       if (_todo == null) {
         var todo = TodosCompanion.insert(
-              title: _titleController.text,
-              priority: _priority,
-              createdAt: now,
-              updatedAt: now
-        );
+            title: _titleController.text,
+            priority: _priority,
+            createdAt: now,
+            updatedAt: now);
 
         await _db.addTodo(todo);
       } else {
         Todo todo = _todo!.copyWith(
-          title: _titleController.text,
-          description: _descriptionController.text,
-          priority: _priority,
-          updatedAt: now
-        );
+            title: _titleController.text,
+            description: _descriptionController.text,
+            priority: _priority,
+            updatedAt: now);
 
         await _db.updateTodo(todo);
       }

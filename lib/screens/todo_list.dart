@@ -18,7 +18,7 @@ class TodoListState extends State {
   final TodosDatabase _db;
   int _count = 0;
 
-  TodoListState(): this._db = getIt<TodosDatabase>();
+  TodoListState() : this._db = getIt<TodosDatabase>();
 
   @override
   void initState() {
