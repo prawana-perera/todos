@@ -1,8 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:todos/screens/todo_list.dart';
+import 'package:todos/src/database/database.dart';
 
-void main() => runApp(TodoApp());
+// This is our global ServiceLocator
+GetIt getIt = GetIt.instance;
+
+void main() {
+  _setupServices();
+  runApp(TodoApp());
+}
+
+void _setupServices() {
+  getIt.registerSingleton<TodosDatabase>(TodosDatabase(),
+      dispose: (db) => db.close());
+}
 
 class TodoApp extends StatelessWidget {
   @override

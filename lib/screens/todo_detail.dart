@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:todos/model/todo.dart';
-import 'package:todos/util/db_helper.dart';
+import 'package:get_it/get_it.dart';
+import 'package:todos/src/database/database.dart';
 
-final dbHelper = DbHelper();
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
 const menuSave = 'Save and Back';
 const menuDelete = 'Delete';
 const menuBack = 'Back';
 
+// This is our global ServiceLocator
+GetIt getIt = GetIt.instance;
+
 class TodoDetail extends StatefulWidget {
-  final Todo _todo;
+  final Todo? _todo;
 
   TodoDetail(this._todo);
 
@@ -23,9 +24,14 @@ class _TodoDetailState extends State {
   var _priority;
   var _titleController = TextEditingController();
   var _descriptionController = TextEditingController();
-  Todo _todo;
+  var _actionChoices = [menuSave, menuDelete, menuBack];
+  var _pageTitle;
 
-  _TodoDetailState(this._todo);
+  final TodosDatabase _db;
+
+  Todo? _todo;
+
+  _TodoDetailState(this._todo) : this._db = getIt<TodosDatabase>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -33,40 +39,34 @@ class _TodoDetailState extends State {
   void initState() {
     super.initState();
 
-    _priority = this._todo.id != null ? _todo.priority : 1;
-    _todo.priority = _priority;
+    _priority = _todo?.priority ?? 1;
+    _titleController.text = _todo?.title ?? '';
+    _descriptionController.text = _todo?.description ?? '';
+    _pageTitle = _todo?.title ?? 'Create a todo';
 
-    _titleController.text = _todo.title;
-    _descriptionController.text = _todo.description ??= '';
+    if (_todo == null) {
+      _actionChoices = [menuSave, menuBack];
+    }
 
     _titleController.addListener(() {
-      _todo.title = _titleController.text;
-    });
-
-    _descriptionController.addListener(() {
-      _todo.description = _descriptionController.text;
+      _pageTitle = _titleController.text;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var textStyle = Theme.of(context).textTheme.headline6;
-    var actionChoices = [menuSave, menuDelete, menuBack];
-
-    if (_todo.id == null) {
-      actionChoices = [menuSave, menuBack];
-    }
 
     return Form(
         key: _formKey,
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: Text(_todo.title.isEmpty ? 'Create Todo' : _todo.title),
+            title: Text(_pageTitle),
             actions: <Widget>[
               PopupMenuButton(
                   onSelected: _selectAction,
-                  itemBuilder: (BuildContext context) => actionChoices
+                  itemBuilder: (BuildContext context) => _actionChoices
                       .map((String choice) => PopupMenuItem<String>(
                           value: choice, child: Text(choice)))
                       .toList())
@@ -122,7 +122,6 @@ class _TodoDetailState extends State {
                         if (value != null) {
                           setState(() {
                             _priority = int.parse(value);
-                            _todo.priority = _priority;
                           });
                         }
                       },
@@ -159,7 +158,7 @@ class _TodoDetailState extends State {
   }
 
   void _delete() async {
-    var result = await dbHelper.deleteTodo(_todo.id!);
+    var result = await _db.deleteTodo(this._todo!);
     _back();
 
     if (result != 0) {
@@ -174,16 +173,28 @@ class _TodoDetailState extends State {
 
   void _save() async {
     if (_formKey.currentState!.validate()) {
-      _todo.date = DateFormat.yMd().format(DateTime.now());
+      var now = DateTime.now().toUtc();
 
-      if (_todo.id == null) {
-        await dbHelper.insertTodo(_todo);
+      if (_todo == null) {
+        var todo = TodosCompanion.insert(
+            title: _titleController.text,
+            priority: _priority,
+            createdAt: now,
+            updatedAt: now);
+
+        await _db.addTodo(todo);
       } else {
-        await dbHelper.updateTodo(_todo);
+        Todo todo = _todo!.copyWith(
+            title: _titleController.text,
+            description: _descriptionController.text,
+            priority: _priority,
+            updatedAt: now);
+
+        await _db.updateTodo(todo);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Todo '${_todo.title}' Saved"),
+        content: Text("Todo '${_titleController.text}' Saved"),
         duration: const Duration(seconds: 3),
       ));
       _back();

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:todos/model/todo.dart';
+import 'package:get_it/get_it.dart';
 import 'package:todos/screens/todo_detail.dart';
-import 'package:todos/util/db_helper.dart';
+import 'package:todos/src/database/database.dart';
+
+// This is our global ServiceLocator
+GetIt getIt = GetIt.instance;
 
 class TodoList extends StatefulWidget {
   @override
@@ -12,8 +15,10 @@ class TodoListState extends State {
   Future<bool>? _todosFuture;
   List<Todo> _todos = [];
 
-  DbHelper _helper = DbHelper();
+  final TodosDatabase _db;
   int _count = 0;
+
+  TodoListState() : this._db = getIt<TodosDatabase>();
 
   @override
   void initState() {
@@ -35,7 +40,7 @@ class TodoListState extends State {
               body: _todoListItems(),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  _navigateToDetails(Todo.empty());
+                  _navigateToDetails(null);
                 },
                 tooltip: 'Add new Todo',
                 child: new Icon(Icons.add),
@@ -62,7 +67,7 @@ class TodoListState extends State {
               child: Text(todo.priority.toString()),
             ),
             title: Text(todo.title),
-            subtitle: Text(todo.date),
+            // subtitle: Text(todo.date),
             onTap: () {
               _navigateToDetails(todo);
             },
@@ -84,11 +89,7 @@ class TodoListState extends State {
   }
 
   Future<bool> _getTodos() async {
-    await _helper.initialiseDb();
-    var todos = (await _helper.getTodos())
-        .map((data) => Todo.fromObject(data))
-        .toList();
-
+    var todos = await _db.getAllTodos();
     todos.sort((a, b) => b.priority.compareTo(a.priority));
 
     setState(() {
@@ -99,7 +100,7 @@ class TodoListState extends State {
     return true;
   }
 
-  void _navigateToDetails(Todo todo) async {
+  void _navigateToDetails(Todo? todo) async {
     var result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => TodoDetail(todo)));
 
