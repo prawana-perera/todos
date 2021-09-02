@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:todos/screens/home.dart';
 import 'package:todos/screens/todo_list.dart';
 import 'package:todos/src/database/database.dart';
 
@@ -46,7 +47,7 @@ class _HomeState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: TodoList(),
+      body: Home(),
     );
   }
 }
