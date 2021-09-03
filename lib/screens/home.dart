@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -13,17 +14,12 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       body: Column(
-        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(
             height: 184,
             child: Stack(
               children: [
                 Positioned.fill(
-                  // In order to have the ink splash appear above the image, you
-                  // must use Ink.image. This allows the image to be painted as part
-                  // of the Material and display ink effects above it. Using a
-                  // standard Image will obscure the ink splash.
                   child: Ink.image(
                     image: AssetImage('assets/images/landscape.jpeg'),
                     fit: BoxFit.cover,
@@ -46,17 +42,6 @@ class Home extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.arrow_back_ios,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        debugPrint('pressed back');
-                                      },
-                                    )),
-                                Container(
                                   padding: EdgeInsets.only(left: 20),
                                   child: Text('My Todos', style: titleStyle),
                                 ),
@@ -72,10 +57,28 @@ class Home extends StatelessWidget {
                       Expanded(
                           child: Container(
                         constraints: BoxConstraints.expand(),
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.white.withOpacity(0.3),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [Text('Stats', style: titleStyle)],
+                          children: [
+                            new CircularPercentIndicator(
+                              radius: 100.0,
+                              animation: true,
+                              animationDuration: 1200,
+                              lineWidth: 15.0,
+                              percent: 0.4,
+                              center: new Text(
+                                "40%",
+                                style: new TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 16.0
+                                ),
+                              ),
+                              circularStrokeCap: CircularStrokeCap.butt,
+                              backgroundColor: Colors.white,
+                              progressColor: Colors.blueAccent,
+                            )
+                          ],
                         ),
                       ))
                     ],
@@ -86,7 +89,7 @@ class Home extends StatelessWidget {
           ),
           Expanded(
               child: Container(
-            color: Colors.white24,
+            color: Colors.black12,
             child: ListView(
               children: [
                 _tile('CineArts at the Empire', '85 W Portal Ave', Icons.map),
