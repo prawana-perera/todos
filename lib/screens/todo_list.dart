@@ -1,62 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:todos/controllers/todos_list_controller.dart';
 import 'package:todos/screens/todo_detail.dart';
 import 'package:todos/src/database/database.dart';
+import 'package:get/get.dart';
 
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
-
-class TodoList extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => TodoListState();
-}
-
-class TodoListState extends State {
-  Future<bool>? _todosFuture;
-  List<Todo> _todos = [];
-
-  final TodosDatabase _db;
-  int _count = 0;
-
-  TodoListState() : this._db = getIt<TodosDatabase>();
-
-  @override
-  void initState() {
-    super.initState();
-    _todosFuture = _getTodos();
-  }
+class TodoList extends StatelessWidget {
+  final TodosListController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-        future: _todosFuture,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
+    return Obx(() {
+      if(_controller.isLoading.value) {
+        return Center(child: CircularProgressIndicator());
+      } else {
+        return Scaffold(
+          body: _todoListItems(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _navigateToDetails(context, null);
+            },
+            tooltip: 'Add new Todo',
+            child: new Icon(Icons.add),
+          ),
+        );
+      }
 
-          if (snapshot.hasData) {
-            return Scaffold(
-              body: _todoListItems(),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  _navigateToDetails(null);
-                },
-                tooltip: 'Add new Todo',
-                child: new Icon(Icons.add),
-              ),
-            );
-          }
 
-          return Container();
-        });
+
+    });
   }
 
   ListView _todoListItems() {
     return ListView.builder(
-      itemCount: _count,
+      itemCount: _controller.todos.length,
       itemBuilder: (BuildContext context, int position) {
-        var todo = _todos[position];
+        var todo = _controller.todos[position];
 
         return Card(
           color: Colors.white,
@@ -69,7 +47,7 @@ class TodoListState extends State {
             title: Text(todo.title),
             // subtitle: Text(todo.date),
             onTap: () {
-              _navigateToDetails(todo);
+              _navigateToDetails(context, todo);
             },
           ),
         );
@@ -88,24 +66,12 @@ class TodoListState extends State {
     }
   }
 
-  Future<bool> _getTodos() async {
-    var todos = await _db.getAllTodos();
-    todos.sort((a, b) => b.priority.compareTo(a.priority));
-
-    setState(() {
-      _todos = todos;
-      _count = todos.length;
-    });
-
-    return true;
-  }
-
-  void _navigateToDetails(Todo? todo) async {
+  void _navigateToDetails(BuildContext context, Todo? todo) async {
     var result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => TodoDetail(todo)));
 
     if (result) {
-      _getTodos();
+      _controller.getAll();
     }
   }
 }

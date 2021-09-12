@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
 import 'package:todos/src/database/database.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
@@ -7,9 +7,6 @@ const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 const menuSave = 'Save and Back';
 const menuDelete = 'Delete';
 const menuBack = 'Back';
-
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
 
 class TodoDetail extends StatefulWidget {
   final Todo? _todo;
@@ -27,11 +24,11 @@ class _TodoDetailState extends State {
   var _actionChoices = [menuSave, menuDelete, menuBack];
   var _pageTitle;
 
-  final TodosDatabase _db;
+  final TodosDatabase _db = Get.find();
 
   Todo? _todo;
 
-  _TodoDetailState(this._todo) : this._db = getIt<TodosDatabase>();
+  _TodoDetailState(this._todo);
 
   final _formKey = GlobalKey<FormState>();
 

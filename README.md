@@ -59,3 +59,8 @@ Code coverage - https://app.codecov.io/gh/prawana-perera/todos
 ### Reference Projects
 - https://github.com/Albert221/FastShopping/
 - https://github.com/flutter/gallery
+
+
+- GetX + API request
+    - https://www.youtube.com/watch?v=V0oxG3tWiwk (TODO: watch)
+    - https://www.youtube.com/watch?v=tNGfVp4KY2g (https://github.com/themaaz32/getx_news_app_impl)

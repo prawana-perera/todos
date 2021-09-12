@@ -1,33 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
+
+import 'package:todos/controllers/todos_list_controller.dart';
 import 'package:todos/screens/todo_list.dart';
 import 'package:todos/src/database/database.dart';
 
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
-
 void main() {
-  _setupServices();
-  runApp(TodoApp());
+  runApp(GetMaterialApp(
+    home: HomePage(title: 'TODOs App'),
+    onInit: () => _registerDependencies(),
+    onDispose: () {
+      debugPrint('in onDispose');
+      _unRegisterDependencies();
+    },
+  ));
 }
 
-void _setupServices() {
-  getIt.registerSingleton<TodosDatabase>(TodosDatabase(),
-      dispose: (db) => db.close());
+void _registerDependencies() {
+  Get.put(TodosDatabase());
+  Get.put(TodosListController());
 }
 
-class TodoApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Todos',
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-      ),
-      home: HomePage(title: 'TODOs App'),
-    );
-  }
+void _unRegisterDependencies() {
+  TodosDatabase db = Get.find();
+  db.close();
 }
 
 class HomePage extends StatefulWidget {
