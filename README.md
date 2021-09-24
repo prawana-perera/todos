@@ -60,6 +60,8 @@ Code coverage - https://app.codecov.io/gh/prawana-perera/todos
 - https://github.com/Albert221/FastShopping/
 - https://github.com/flutter/gallery
 
+- Awesome video with useful tips: https://www.youtube.com/watch?v=5vDq5DXXxss
+
 
 - GetX + API request
     - https://www.youtube.com/watch?v=V0oxG3tWiwk (TODO: watch)
