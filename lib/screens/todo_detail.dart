@@ -1,65 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todos/src/database/database.dart';
+import 'package:todos/controllers/todo_detail_controller.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
 const menuSave = 'Save and Back';
 const menuDelete = 'Delete';
-const menuBack = 'Back';
 
-class TodoDetail extends StatefulWidget {
-  final Todo? _todo;
+class TodoDetail extends StatelessWidget {
+  final TodoDetailController _controller = Get.find();
 
-  TodoDetail(this._todo);
-
-  @override
-  State<StatefulWidget> createState() => _TodoDetailState(_todo);
-}
-
-class _TodoDetailState extends State {
-  var _priority;
-  var _titleController = TextEditingController();
-  var _descriptionController = TextEditingController();
-  var _actionChoices = [menuSave, menuDelete, menuBack];
-  var _pageTitle;
-
-  final TodosDatabase _db = Get.find();
-
-  Todo? _todo;
-
-  _TodoDetailState(this._todo);
-
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _priority = _todo?.priority ?? 1;
-    _titleController.text = _todo?.title ?? '';
-    _descriptionController.text = _todo?.description ?? '';
-    _pageTitle = _todo?.title ?? 'Create a todo';
-
-    if (_todo == null) {
-      _actionChoices = [menuSave, menuBack];
-    }
-
-    _titleController.addListener(() {
-      _pageTitle = _titleController.text;
-    });
-  }
+  final _actionChoices = [menuSave, menuDelete];
 
   @override
   Widget build(BuildContext context) {
     var textStyle = Theme.of(context).textTheme.headline6;
 
     return Form(
-        key: _formKey,
+        key: _controller.formKey,
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text(_pageTitle),
+            title: Text(_controller.pageTitle.value),
             actions: <Widget>[
               PopupMenuButton(
                   onSelected: _selectAction,
@@ -75,7 +36,7 @@ class _TodoDetailState extends State {
               Column(
                 children: <Widget>[
                   TextFormField(
-                    controller: _titleController,
+                    controller: _controller.titleController,
                     style: textStyle,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -96,7 +57,7 @@ class _TodoDetailState extends State {
                   Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
                     child: TextFormField(
-                      controller: _descriptionController,
+                      controller: _controller.descriptionController,
                       style: textStyle,
                       decoration: InputDecoration(
                           labelText: 'Description',
@@ -106,22 +67,65 @@ class _TodoDetailState extends State {
                     ),
                   ),
                   ListTile(
-                    title: DropdownButton<String>(
-                      items: priorityMap.entries
-                          .map((p) => DropdownMenuItem<String>(
-                                child: Text(p.value),
-                                value: p.key.toString(),
-                              ))
-                          .toList(),
-                      style: textStyle,
-                      value: _priority.toString(),
-                      onChanged: (String? value) {
-                        if (value != null) {
-                          setState(() {
-                            _priority = int.parse(value);
-                          });
-                        }
-                      },
+                    title: Obx(() {
+                      return DropdownButton<String>(
+                        items: priorityMap.entries
+                            .map((p) => DropdownMenuItem<String>(
+                                  child: Text(p.value),
+                                  value: p.key.toString(),
+                                ))
+                            .toList(),
+                        style: textStyle,
+                        value: _controller.priority.toString(),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            _controller.priority(int.parse(value));
+                          }
+                        },
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TextButton.icon(
+                            icon: Icon(Icons.chevron_left),
+                            onPressed: () {
+                              _back();
+                            },
+                            label: Text('Back'),
+                          ),
+                        )),
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.save),
+                            onPressed: () {
+                              _save();
+                            },
+                            label: Text('Save'),
+                          ),
+                        )),
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TextButton.icon(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              _delete();
+                            },
+                            label: Text('Delete'),
+                            style: TextButton.styleFrom(
+                              primary: Colors.red,
+                            ),
+                          ),
+                        )),
+                      ],
                     ),
                   )
                 ],
@@ -131,19 +135,8 @@ class _TodoDetailState extends State {
         ));
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-
-    super.dispose();
-  }
-
   void _selectAction(String value) {
     switch (value) {
-      case menuBack:
-        _back();
-        break;
       case menuDelete:
         _delete();
         break;
@@ -155,50 +148,18 @@ class _TodoDetailState extends State {
   }
 
   void _delete() async {
-    var result = await _db.deleteTodo(this._todo!);
-    _back();
-
-    if (result != 0) {
-      AlertDialog alertDialog = AlertDialog(
-        title: Text('Delete TODO'),
-        content: Text('The TODO has been deleted'),
-      );
-
-      showDialog(context: context, builder: (_) => alertDialog);
-    }
+    await _controller.deleteTodo();
+    _back(updated: true);
   }
 
   void _save() async {
-    if (_formKey.currentState!.validate()) {
-      var now = DateTime.now().toUtc();
-
-      if (_todo == null) {
-        var todo = TodosCompanion.insert(
-            title: _titleController.text,
-            priority: _priority,
-            createdAt: now,
-            updatedAt: now);
-
-        await _db.addTodo(todo);
-      } else {
-        Todo todo = _todo!.copyWith(
-            title: _titleController.text,
-            description: _descriptionController.text,
-            priority: _priority,
-            updatedAt: now);
-
-        await _db.updateTodo(todo);
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Todo '${_titleController.text}' Saved"),
-        duration: const Duration(seconds: 3),
-      ));
-      _back();
+    if (_controller.formKey.currentState!.validate()) {
+      _controller.saveTodo();
+      _back(updated: true);
     }
   }
 
-  void _back() {
-    Navigator.pop(context, true);
+  void _back({bool updated = false}) {
+    Get.back(result: updated);
   }
 }

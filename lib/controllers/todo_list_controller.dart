@@ -20,9 +20,9 @@ class TodosListController extends GetxController {
       isLoading(true);
       final allTodos = await _db.getAllTodos();
       todos.assignAll(allTodos);
-    } catch(e) {
+    } catch (e) {
       debugPrint(e.toString());
-    }finally {
+    } finally {
       debugPrint('DONE');
       isLoading(false);
     }
