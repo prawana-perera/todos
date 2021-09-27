@@ -16,6 +16,7 @@ class TodoDetailController extends GetxController {
   var priority = 1.obs;
   var description = ''.obs;
   var pageTitle = 'Add a todo'.obs;
+  var isEditing = false.obs;
 
   Todo? _todo;
 
@@ -26,6 +27,7 @@ class TodoDetailController extends GetxController {
     if (id != null) {
       _fetchTodo(int.parse(id));
       pageTitle('Edit todo');
+      isEditing(true);
     }
 
     super.onInit();

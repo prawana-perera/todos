@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:todos/controllers/todo_list_controller.dart';
 import 'package:get/get.dart';
 
@@ -72,6 +73,22 @@ class TodoList extends StatelessWidget {
         : await Get.toNamed('/todos/$id');
 
     if (updated) {
+      // Get.snackbar(
+      //   '',
+      //   'Todo updated',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.black,
+      //   colorText: Colors.white,
+      //   duration: Duration(seconds: 4),
+      //   isDismissible: true,
+      // );
+      Get.showSnackbar(
+        GetBar(
+          message: "Todo Saved",
+          isDismissible: true,
+          duration: Duration(seconds: 2),
+        ),
+      );
       _controller.getAll();
     }
   }

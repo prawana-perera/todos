@@ -4,13 +4,15 @@ import 'package:todos/controllers/todo_detail_controller.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
-const menuSave = 'Save and Back';
+const menuShare = 'Share';
 const menuDelete = 'Delete';
+
+const menuIconMap = {menuDelete: Icons.delete, menuShare: Icons.share};
 
 class TodoDetail extends StatelessWidget {
   final TodoDetailController _controller = Get.find();
 
-  final _actionChoices = [menuSave, menuDelete];
+  final _actionChoices = [menuDelete, menuShare];
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +22,21 @@ class TodoDetail extends StatelessWidget {
         key: _controller.formKey,
         child: Scaffold(
           appBar: AppBar(
-            title: Text(_controller.pageTitle.value),
-            actions: <Widget>[
-              PopupMenuButton(
-                  onSelected: _selectAction,
-                  itemBuilder: (BuildContext context) => _actionChoices
-                      .map((String choice) => PopupMenuItem<String>(
-                          value: choice, child: Text(choice)))
-                      .toList())
-            ],
-          ),
+              title: Text(_controller.pageTitle.value),
+              actions: _controller.isEditing.value
+                  ? <Widget>[
+                      PopupMenuButton(
+                          onSelected: _selectAction,
+                          itemBuilder: (BuildContext context) => _actionChoices
+                              .map((String choice) => PopupMenuItem<String>(
+                                  value: choice,
+                                  child: ListTile(
+                                    leading: Icon(menuIconMap[choice]),
+                                    title: Text(choice),
+                                  )))
+                              .toList())
+                    ]
+                  : null),
           body: Padding(
             padding: EdgeInsets.only(top: 35, left: 10, right: 10),
             child: ListView(children: <Widget>[
@@ -87,21 +94,10 @@ class TodoDetail extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Center(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                            child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: TextButton.icon(
-                            icon: Icon(Icons.chevron_left),
-                            onPressed: () {
-                              _back();
-                            },
-                            label: Text('Back'),
-                          ),
-                        )),
-                        Expanded(
-                            child: Padding(
+                        Padding(
                           padding: EdgeInsets.all(10),
                           child: ElevatedButton.icon(
                             icon: Icon(Icons.save),
@@ -109,22 +105,13 @@ class TodoDetail extends StatelessWidget {
                               _save();
                             },
                             label: Text('Save'),
-                          ),
-                        )),
-                        Expanded(
-                            child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: TextButton.icon(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              _delete();
-                            },
-                            label: Text('Delete'),
-                            style: TextButton.styleFrom(
-                              primary: Colors.red,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 15),
+                              textStyle: TextStyle(fontSize: 20),
                             ),
                           ),
-                        )),
+                        ),
                       ],
                     ),
                   )
@@ -139,9 +126,6 @@ class TodoDetail extends StatelessWidget {
     switch (value) {
       case menuDelete:
         _delete();
-        break;
-      case menuSave:
-        _save();
         break;
       default:
     }
