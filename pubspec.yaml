@@ -35,7 +35,6 @@ dependencies:
   english_words: ^4.0.0-0
   http: ^0.13.3
   get: ^4.3.8
-  flutter_native_splash: ^1.2.4
 
 dev_dependencies:
   flutter_test:
@@ -43,6 +42,7 @@ dev_dependencies:
   flutter_launcher_icons: "^0.9.1"
   moor_generator: # use the latest version
   build_runner:
+  flutter_native_splash: ^1.2.4
 
 flutter_icons:
   #  image_path: "assets/images/icon-128x128.png"
@@ -50,6 +50,12 @@ flutter_icons:
   image_path_ios: "assets/images/todo_app_launcher.png"
   android: true # can specify file name here e.g. "ic_launcher"
   ios: true # can specify file name here e.g. "My-Launcher-Icon"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/todos_splash.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
