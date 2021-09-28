@@ -1,52 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
+import 'package:todos/bindings/todo_detail_binding.dart';
+import 'package:todos/bindings/todo_list_binding.dart';
+
+import 'package:todos/screens/todo_detail.dart';
 import 'package:todos/screens/todo_list.dart';
 import 'package:todos/src/database/database.dart';
 
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
-
 void main() {
-  _setupServices();
-  runApp(TodoApp());
+  runApp(GetMaterialApp(
+    initialRoute: '/todos',
+    getPages: [
+      GetPage(
+          name: '/todos', page: () => TodoList(), binding: TodoListBinding()),
+      GetPage(
+          name: '/todos/new',
+          page: () => TodoDetail(),
+          binding: TodoDetailBinding()),
+      GetPage(
+          name: '/todos/:id',
+          page: () => TodoDetail(),
+          binding: TodoDetailBinding())
+    ],
+    onInit: () => _registerDependencies(),
+    onDispose: () {
+      debugPrint('in onDispose');
+      _unRegisterDependencies();
+    },
+  ));
 }
 
-void _setupServices() {
-  getIt.registerSingleton<TodosDatabase>(TodosDatabase(),
-      dispose: (db) => db.close());
+void _registerDependencies() {
+  Get.put(TodosDatabase());
 }
 
-class TodoApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Todos',
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-      ),
-      home: HomePage(title: 'TODOs App'),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  final String title;
-
-  HomePage({Key? key, required this.title}) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: TodoList(),
-    );
-  }
+void _unRegisterDependencies() {
+  TodosDatabase db = Get.find();
+  db.close();
 }

@@ -1,62 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:todos/screens/todo_detail.dart';
-import 'package:todos/src/database/database.dart';
+import 'package:todos/controllers/todo_list_controller.dart';
+import 'package:get/get.dart';
+import 'package:todos/models/update_result.dart';
 
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
-
-class TodoList extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => TodoListState();
-}
-
-class TodoListState extends State {
-  Future<bool>? _todosFuture;
-  List<Todo> _todos = [];
-
-  final TodosDatabase _db;
-  int _count = 0;
-
-  TodoListState() : this._db = getIt<TodosDatabase>();
-
-  @override
-  void initState() {
-    super.initState();
-    _todosFuture = _getTodos();
-  }
+class TodoList extends StatelessWidget {
+  final TodosListController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-        future: _todosFuture,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-
-          if (snapshot.hasData) {
-            return Scaffold(
-              body: _todoListItems(),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  _navigateToDetails(null);
-                },
-                tooltip: 'Add new Todo',
-                child: new Icon(Icons.add),
-              ),
-            );
-          }
-
-          return Container();
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My Todos'),
+      ),
+      body: Obx(() {
+        if (_controller.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          return Scaffold(
+            body: _todoListItems(),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                _navigateToDetails(context, null);
+              },
+              tooltip: 'Add new Todo',
+              child: new Icon(Icons.add),
+            ),
+          );
+        }
+      }),
+    );
   }
 
   ListView _todoListItems() {
     return ListView.builder(
-      itemCount: _count,
+      itemCount: _controller.todos.length,
       itemBuilder: (BuildContext context, int position) {
-        var todo = _todos[position];
+        var todo = _controller.todos[position];
 
         return Card(
           color: Colors.white,
@@ -69,7 +48,7 @@ class TodoListState extends State {
             title: Text(todo.title),
             // subtitle: Text(todo.date),
             onTap: () {
-              _navigateToDetails(todo);
+              _navigateToDetails(context, todo.id);
             },
           ),
         );
@@ -88,24 +67,39 @@ class TodoListState extends State {
     }
   }
 
-  Future<bool> _getTodos() async {
-    var todos = await _db.getAllTodos();
-    todos.sort((a, b) => b.priority.compareTo(a.priority));
+  void _navigateToDetails(BuildContext context, int? id) async {
+    UpdateResult result = id == null
+        ? await Get.toNamed('/todos/new')
+        : await Get.toNamed('/todos/$id');
+    var message = '';
 
-    setState(() {
-      _todos = todos;
-      _count = todos.length;
-    });
+    switch (result.status) {
+      case UpdateStatus.created:
+        message = '${result.todo!.title} added.';
+        break;
+      case UpdateStatus.updated:
+        message = '${result.todo!.title} updated.';
+        break;
+      case UpdateStatus.deleted:
+        message = '${result.todo!.title} deleted.';
+        break;
+      default: // Without this, you see a WARNING.
+    }
 
-    return true;
-  }
+    Get.showSnackbar(
+      GetBar(
+        messageText: Text(message,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18)),
+        isDismissible: true,
+        duration: Duration(seconds: 3),
+      ),
+    );
 
-  void _navigateToDetails(Todo? todo) async {
-    var result = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => TodoDetail(todo)));
-
-    if (result) {
-      _getTodos();
+    if (result.status != UpdateStatus.none) {
+      _controller.getAll();
     }
   }
 }

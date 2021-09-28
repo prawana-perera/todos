@@ -1,84 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:todos/src/database/database.dart';
+import 'package:get/get.dart';
+import 'package:todos/controllers/todo_detail_controller.dart';
+import 'package:todos/models/update_result.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
-const menuSave = 'Save and Back';
+const menuShare = 'Share';
 const menuDelete = 'Delete';
-const menuBack = 'Back';
 
-// This is our global ServiceLocator
-GetIt getIt = GetIt.instance;
+const menuIconMap = {menuDelete: Icons.delete, menuShare: Icons.share};
 
-class TodoDetail extends StatefulWidget {
-  final Todo? _todo;
+class TodoDetail extends StatelessWidget {
+  final TodoDetailController _controller = Get.find();
 
-  TodoDetail(this._todo);
-
-  @override
-  State<StatefulWidget> createState() => _TodoDetailState(_todo);
-}
-
-class _TodoDetailState extends State {
-  var _priority;
-  var _titleController = TextEditingController();
-  var _descriptionController = TextEditingController();
-  var _actionChoices = [menuSave, menuDelete, menuBack];
-  var _pageTitle;
-
-  final TodosDatabase _db;
-
-  Todo? _todo;
-
-  _TodoDetailState(this._todo) : this._db = getIt<TodosDatabase>();
-
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _priority = _todo?.priority ?? 1;
-    _titleController.text = _todo?.title ?? '';
-    _descriptionController.text = _todo?.description ?? '';
-    _pageTitle = _todo?.title ?? 'Create a todo';
-
-    if (_todo == null) {
-      _actionChoices = [menuSave, menuBack];
-    }
-
-    _titleController.addListener(() {
-      _pageTitle = _titleController.text;
-    });
-  }
+  final _actionChoices = [menuDelete, menuShare];
 
   @override
   Widget build(BuildContext context) {
     var textStyle = Theme.of(context).textTheme.headline6;
 
     return Form(
-        key: _formKey,
+        key: _controller.formKey,
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text(_pageTitle),
-            actions: <Widget>[
-              PopupMenuButton(
-                  onSelected: _selectAction,
-                  itemBuilder: (BuildContext context) => _actionChoices
-                      .map((String choice) => PopupMenuItem<String>(
-                          value: choice, child: Text(choice)))
-                      .toList())
-            ],
-          ),
+              title: Text(_controller.pageTitle.value),
+              actions: _controller.isEditing.value
+                  ? <Widget>[
+                      PopupMenuButton(
+                          onSelected: _selectAction,
+                          itemBuilder: (BuildContext context) => _actionChoices
+                              .map((String choice) => PopupMenuItem<String>(
+                                  value: choice,
+                                  child: ListTile(
+                                    leading: Icon(menuIconMap[choice]),
+                                    title: Text(choice),
+                                  )))
+                              .toList())
+                    ]
+                  : null),
           body: Padding(
             padding: EdgeInsets.only(top: 35, left: 10, right: 10),
             child: ListView(children: <Widget>[
               Column(
                 children: <Widget>[
                   TextFormField(
-                    controller: _titleController,
+                    controller: _controller.titleController,
                     style: textStyle,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -99,7 +65,7 @@ class _TodoDetailState extends State {
                   Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
                     child: TextFormField(
-                      controller: _descriptionController,
+                      controller: _controller.descriptionController,
                       style: textStyle,
                       decoration: InputDecoration(
                           labelText: 'Description',
@@ -109,22 +75,45 @@ class _TodoDetailState extends State {
                     ),
                   ),
                   ListTile(
-                    title: DropdownButton<String>(
-                      items: priorityMap.entries
-                          .map((p) => DropdownMenuItem<String>(
-                                child: Text(p.value),
-                                value: p.key.toString(),
-                              ))
-                          .toList(),
-                      style: textStyle,
-                      value: _priority.toString(),
-                      onChanged: (String? value) {
-                        if (value != null) {
-                          setState(() {
-                            _priority = int.parse(value);
-                          });
-                        }
-                      },
+                    title: Obx(() {
+                      return DropdownButton<String>(
+                        items: priorityMap.entries
+                            .map((p) => DropdownMenuItem<String>(
+                                  child: Text(p.value),
+                                  value: p.key.toString(),
+                                ))
+                            .toList(),
+                        style: textStyle,
+                        value: _controller.priority.toString(),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            _controller.priority(int.parse(value));
+                          }
+                        },
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.save),
+                            onPressed: () {
+                              _save();
+                            },
+                            label: Text('Save'),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 15),
+                              textStyle: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -134,74 +123,34 @@ class _TodoDetailState extends State {
         ));
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-
-    super.dispose();
-  }
-
   void _selectAction(String value) {
     switch (value) {
-      case menuBack:
-        _back();
-        break;
       case menuDelete:
         _delete();
-        break;
-      case menuSave:
-        _save();
         break;
       default:
     }
   }
 
   void _delete() async {
-    var result = await _db.deleteTodo(this._todo!);
-    _back();
-
-    if (result != 0) {
-      AlertDialog alertDialog = AlertDialog(
-        title: Text('Delete TODO'),
-        content: Text('The TODO has been deleted'),
-      );
-
-      showDialog(context: context, builder: (_) => alertDialog);
-    }
+    await _controller.deleteTodo();
+    _back(result: UpdateResult(UpdateStatus.deleted, _controller.todo));
   }
 
   void _save() async {
-    if (_formKey.currentState!.validate()) {
-      var now = DateTime.now().toUtc();
+    if (_controller.formKey.currentState!.validate()) {
+      await _controller.saveTodo();
 
-      if (_todo == null) {
-        var todo = TodosCompanion.insert(
-            title: _titleController.text,
-            priority: _priority,
-            createdAt: now,
-            updatedAt: now);
-
-        await _db.addTodo(todo);
+      if (_controller.isEditing.value) {
+        _back(result: UpdateResult(UpdateStatus.updated, _controller.todo));
       } else {
-        Todo todo = _todo!.copyWith(
-            title: _titleController.text,
-            description: _descriptionController.text,
-            priority: _priority,
-            updatedAt: now);
-
-        await _db.updateTodo(todo);
+        _back(result: UpdateResult(UpdateStatus.created, _controller.todo));
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Todo '${_titleController.text}' Saved"),
-        duration: const Duration(seconds: 3),
-      ));
-      _back();
     }
   }
 
-  void _back() {
-    Navigator.pop(context, true);
+  void _back(
+      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
+    Get.back(result: result);
   }
 }
