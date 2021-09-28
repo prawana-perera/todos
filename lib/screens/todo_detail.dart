@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todos/controllers/todo_detail_controller.dart';
+import 'package:todos/models/update_result.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 
@@ -133,17 +134,23 @@ class TodoDetail extends StatelessWidget {
 
   void _delete() async {
     await _controller.deleteTodo();
-    _back(updated: true);
+    _back(result: UpdateResult(UpdateStatus.deleted, _controller.todo));
   }
 
   void _save() async {
     if (_controller.formKey.currentState!.validate()) {
-      _controller.saveTodo();
-      _back(updated: true);
+      await _controller.saveTodo();
+
+      if (_controller.isEditing.value) {
+        _back(result: UpdateResult(UpdateStatus.updated, _controller.todo));
+      } else {
+        _back(result: UpdateResult(UpdateStatus.created, _controller.todo));
+      }
     }
   }
 
-  void _back({bool updated = false}) {
-    Get.back(result: updated);
+  void _back(
+      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
+    Get.back(result: result);
   }
 }

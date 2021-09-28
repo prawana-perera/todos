@@ -74,7 +74,14 @@ class TodoDetailController extends GetxController {
           createdAt: now,
           updatedAt: now);
 
-      await _db.addTodo(todo);
+      var id = await _db.addTodo(todo);
+      _todo = Todo(
+          id: id,
+          title: todo.title.value,
+          description: todo.description.value,
+          priority: todo.priority.value,
+          createdAt: todo.createdAt.value,
+          updatedAt: todo.updatedAt.value);
     } else {
       Todo todo = _todo!.copyWith(
           title: titleController.text,
@@ -83,6 +90,11 @@ class TodoDetailController extends GetxController {
           updatedAt: now);
 
       await _db.updateTodo(todo);
+      _todo = todo;
     }
+  }
+
+  Todo? get todo {
+    return _todo;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:todos/controllers/todo_list_controller.dart';
 import 'package:get/get.dart';
+import 'package:todos/models/update_result.dart';
 
 class TodoList extends StatelessWidget {
   final TodosListController _controller = Get.find();
@@ -68,27 +68,37 @@ class TodoList extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context, int? id) async {
-    bool updated = id == null
+    UpdateResult result = id == null
         ? await Get.toNamed('/todos/new')
         : await Get.toNamed('/todos/$id');
+    var message = '';
 
-    if (updated) {
-      // Get.snackbar(
-      //   '',
-      //   'Todo updated',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   backgroundColor: Colors.black,
-      //   colorText: Colors.white,
-      //   duration: Duration(seconds: 4),
-      //   isDismissible: true,
-      // );
-      Get.showSnackbar(
-        GetBar(
-          message: "Todo Saved",
-          isDismissible: true,
-          duration: Duration(seconds: 2),
-        ),
-      );
+    switch (result.status) {
+      case UpdateStatus.created:
+        message = '${result.todo!.title} added.';
+        break;
+      case UpdateStatus.updated:
+        message = '${result.todo!.title} updated.';
+        break;
+      case UpdateStatus.deleted:
+        message = '${result.todo!.title} deleted.';
+        break;
+      default: // Without this, you see a WARNING.
+    }
+
+    Get.showSnackbar(
+      GetBar(
+        messageText: Text(message,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18)),
+        isDismissible: true,
+        duration: Duration(seconds: 3),
+      ),
+    );
+
+    if (result.status != UpdateStatus.none) {
       _controller.getAll();
     }
   }

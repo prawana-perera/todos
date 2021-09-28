@@ -49,7 +49,11 @@ class TodosDatabase extends _$TodosDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<List<Todo>> getAllTodos() => select(todos).get();
+  Future<List<Todo>> getAllTodos() => (select(todos)
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.priority, mode: OrderingMode.desc)
+        ]))
+      .get();
 
   Future<Todo?> getTodo(int id) =>
       (select(todos)..where((t) => t.id.equals(id))).getSingleOrNull();
