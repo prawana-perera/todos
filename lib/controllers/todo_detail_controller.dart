@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/src/database/database.dart';
-import 'package:moor/moor.dart' as moor;
+import 'package:todos/models/Todo.dart';
+import 'package:todos/repositories/todo_repository.dart';
 
 class TodoDetailController extends GetxController {
-  TodosDatabase _db = Get.find();
+  final _todoRepository = Get.find<TodoRepository>();
 
   final formKey = GlobalKey<FormState>();
   var titleController = TextEditingController();
@@ -25,7 +25,7 @@ class TodoDetailController extends GetxController {
     String? id = Get.parameters['id'];
 
     if (id != null) {
-      _fetchTodo(int.parse(id));
+      _fetchTodo(id);
       pageTitle('Edit todo');
       isEditing(true);
     }
@@ -41,13 +41,13 @@ class TodoDetailController extends GetxController {
     super.dispose();
   }
 
-  void _fetchTodo(int id) async {
+  void _fetchTodo(String id) async {
     try {
       isLoading(true);
-      _todo = await _db.getTodo(id);
+      _todo = await _todoRepository.getById(id);
 
       // Handle in case todo not found, throw error? Navigate back with message
-      titleController.text = _todo!.title;
+      titleController.text = _todo!.name;
       descriptionController.text = _todo!.description!;
       priority(_todo!.priority);
     } catch (e) {
@@ -59,39 +59,25 @@ class TodoDetailController extends GetxController {
   }
 
   Future deleteTodo() async {
-    await _db.deleteTodo(_todo!);
+    await _todoRepository.delete(_todo!);
   }
 
   Future saveTodo() async {
-    var now = DateTime.now().toUtc();
+    // var now = DateTime.now().toUtc();
 
     if (_todo == null) {
-      var todo = TodosCompanion.insert(
-          title: titleController.text,
-          // Not good, better way to solve
-          description: moor.Value(descriptionController.text),
-          priority: priority.value,
-          createdAt: now,
-          updatedAt: now);
-
-      var id = await _db.addTodo(todo);
       _todo = Todo(
-          id: id,
-          title: todo.title.value,
-          description: todo.description.value,
-          priority: todo.priority.value,
-          createdAt: todo.createdAt.value,
-          updatedAt: todo.updatedAt.value);
-    } else {
-      Todo todo = _todo!.copyWith(
-          title: titleController.text,
+          name: titleController.text,
           description: descriptionController.text,
-          priority: priority.value,
-          updatedAt: now);
-
-      await _db.updateTodo(todo);
-      _todo = todo;
+          priority: priority.value);
+    } else {
+      _todo = _todo!.copyWith(
+          name: titleController.text,
+          description: descriptionController.text,
+          priority: priority.value);
     }
+
+    _todoRepository.save(_todo!);
   }
 
   Todo? get todo {

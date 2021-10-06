@@ -24,6 +24,10 @@ class TodoDetail extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
               title: Text(_controller.pageTitle.value),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => _back(),
+              ),
               actions: _controller.isEditing.value
                   ? <Widget>[
                       PopupMenuButton(

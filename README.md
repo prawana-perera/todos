@@ -68,3 +68,14 @@ Code coverage - https://app.codecov.io/gh/prawana-perera/todos
     - https://www.youtube.com/watch?v=tNGfVp4KY2g (https://github.com/themaaz32/getx_news_app_impl)
 
 - Open source illustrations - https://undraw.co/illustrations
+
+- Amplify example - https://github.com/offlineprogrammer/amplify_todo
+    - https://dev.to/offlineprogrammer/a-flutter-todo-app-using-awsamplify-getx-2oii
+
+
+### Amplify
+
+Sandbox ID
+```
+amplify pull --sandboxId a337cacd-f3fd-4259-975d-8451800cef2c
+```

@@ -1,4 +1,4 @@
-import 'package:todos/src/database/database.dart';
+import 'Todo.dart';
 
 enum UpdateStatus { deleted, updated, created, none }
 

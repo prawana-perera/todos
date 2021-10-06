@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/src/database/database.dart';
+import 'package:todos/models/Todo.dart';
+import 'package:todos/repositories/todo_repository.dart';
 
 class TodosListController extends GetxController {
-  TodosDatabase _db = Get.find();
+  final todoRepository = Get.find<TodoRepository>();
 
   List<Todo> todos = <Todo>[].obs;
   var isLoading = false.obs;
@@ -18,7 +21,7 @@ class TodosListController extends GetxController {
   void getAll() async {
     try {
       isLoading(true);
-      final allTodos = await _db.getAllTodos();
+      final allTodos = await todoRepository.getAll();
       todos.assignAll(allTodos);
     } catch (e) {
       debugPrint(e.toString());
