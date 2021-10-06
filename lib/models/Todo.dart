@@ -18,7 +18,6 @@
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
-
 /** This is an auto generated class representing the Todo type in your schema. */
 @immutable
 class Todo extends Model {
@@ -30,135 +29,154 @@ class Todo extends Model {
 
   @override
   getInstanceType() => classType;
-  
+
   @override
   String getId() {
     return id;
   }
-  
+
   String get name {
     try {
       return _name!;
-    } catch(e) {
-      throw new DataStoreException(DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage, recoverySuggestion: DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion, underlyingException: e.toString());
+    } catch (e) {
+      throw new DataStoreException(
+          DataStoreExceptionMessages
+              .codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion: DataStoreExceptionMessages
+              .codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString());
     }
   }
-  
+
   String? get description {
     return _description;
   }
-  
+
   int get priority {
     try {
       return _priority!;
-    } catch(e) {
-      throw new DataStoreException(DataStoreExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage, recoverySuggestion: DataStoreExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion, underlyingException: e.toString());
+    } catch (e) {
+      throw new DataStoreException(
+          DataStoreExceptionMessages
+              .codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion: DataStoreExceptionMessages
+              .codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString());
     }
   }
-  
-  const Todo._internal({required this.id, required name, description, required priority}): _name = name, _description = description, _priority = priority;
-  
-  factory Todo({String? id, required String name, String? description, required int priority}) {
+
+  const Todo._internal(
+      {required this.id, required name, description, required priority})
+      : _name = name,
+        _description = description,
+        _priority = priority;
+
+  factory Todo(
+      {String? id,
+      required String name,
+      String? description,
+      required int priority}) {
     return Todo._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      description: description,
-      priority: priority);
+        id: id == null ? UUID.getUUID() : id,
+        name: name,
+        description: description,
+        priority: priority);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Todo &&
-      id == other.id &&
-      _name == other._name &&
-      _description == other._description &&
-      _priority == other._priority;
+        id == other.id &&
+        _name == other._name &&
+        _description == other._description &&
+        _priority == other._priority;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write("Todo {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("description=" + "$_description" + ", ");
-    buffer.write("priority=" + (_priority != null ? _priority!.toString() : "null"));
+    buffer.write(
+        "priority=" + (_priority != null ? _priority!.toString() : "null"));
     buffer.write("}");
-    
+
     return buffer.toString();
   }
-  
-  Todo copyWith({String? id, String? name, String? description, int? priority}) {
+
+  Todo copyWith(
+      {String? id, String? name, String? description, int? priority}) {
     return Todo(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      priority: priority ?? this.priority);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        priority: priority ?? this.priority);
   }
-  
-  Todo.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _name = json['name'],
-      _description = json['description'],
-      _priority = (json['priority'] as num?)?.toInt();
-  
+
+  Todo.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        _name = json['name'],
+        _description = json['description'],
+        _priority = (json['priority'] as num?)?.toInt();
+
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'description': _description, 'priority': _priority
-  };
+        'id': id,
+        'name': _name,
+        'description': _description,
+        'priority': _priority
+      };
 
   static final QueryField ID = QueryField(fieldName: "todo.id");
   static final QueryField NAME = QueryField(fieldName: "name");
   static final QueryField DESCRIPTION = QueryField(fieldName: "description");
   static final QueryField PRIORITY = QueryField(fieldName: "priority");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Todo";
     modelSchemaDefinition.pluralName = "Todos";
-    
+
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.PUBLIC,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+      AuthRule(authStrategy: AuthStrategy.PUBLIC, operations: [
+        ModelOperation.CREATE,
+        ModelOperation.UPDATE,
+        ModelOperation.DELETE,
+        ModelOperation.READ
+      ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Todo.NAME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Todo.NAME,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Todo.DESCRIPTION,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Todo.DESCRIPTION,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Todo.PRIORITY,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.int)
-    ));
+        key: Todo.PRIORITY,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.int)));
   });
 }
 
 class _TodoModelType extends ModelType<Todo> {
   const _TodoModelType();
-  
+
   @override
   Todo fromJson(Map<String, dynamic> jsonData) {
     return Todo.fromJson(jsonData);
