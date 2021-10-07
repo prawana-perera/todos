@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/models/Todo.dart';
+import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class TodosListController extends GetxController {
@@ -20,6 +20,7 @@ class TodosListController extends GetxController {
     try {
       isLoading(true);
       final allTodos = await todoRepository.getAll();
+      print('all todos' + allTodos.toString());
       todos.assignAll(allTodos);
     } catch (e) {
       debugPrint(e.toString());

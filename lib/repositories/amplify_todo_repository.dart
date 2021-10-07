@@ -1,57 +1,152 @@
+import 'dart:convert';
+
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify.dart';
-import 'package:amplify_datastore/amplify_datastore.dart';
 
 import '../amplifyconfiguration.dart';
-import 'package:todos/models/ModelProvider.dart';
-import 'package:todos/models/Todo.dart';
+import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class AmplifyTodoRepository implements TodoRepository {
-  // amplify plugins
-  // static final AmplifyDataStore _dataStorePlugin =
-  //     AmplifyDataStore(modelProvider: ModelProvider.instance);
-
   static Future<void> configure() async {
     if (!Amplify.isConfigured) {
-      AmplifyDataStore dataStorePlugin =
-          AmplifyDataStore(modelProvider: ModelProvider.instance);
-
-      // add Amplify plugins
-      await Amplify.addPlugins([dataStorePlugin]);
-
       try {
-        // configure Amplify
-        // note that Amplify cannot be configured more than once!
+        Amplify.addPlugin(AmplifyAPI());
         await Amplify.configure(amplifyconfig);
       } catch (e) {
         // error handling can be improved for sure!
-        // but this will be sufficient for the purposes of this tutorial
         print('An error occurred while configuring Amplify: $e');
       }
     }
   }
 
   @override
-  Future<List<Todo>> getAll() {
-    return Amplify.DataStore.query(Todo.classType,
-        sortBy: [Todo.PRIORITY.descending()]);
-  }
+  Future<List<Todo>> getAll() async {
+    String graphQLDocument = '''query ListTodos {
+      listTodos {
+        items {
+          id
+          name
+          description
+          priority
+        }
+        nextToken
+      }
+    }''';
 
-  @override
-  Future<Todo> save(Todo todo) async {
-    await Amplify.DataStore.save(todo);
-    return todo;
-  }
+    var operation = Amplify.API.query(
+        request: GraphQLRequest<String>(
+      document: graphQLDocument,
+    ));
 
-  @override
-  Future<void> delete(Todo todo) async {
-    await Amplify.DataStore.delete(todo);
+    var response = await operation.response;
+    var data = response.data;
+
+    print('Query result: ' + data);
+
+    // Map<String, dynamic> map = jsonDecode(data)['listTodos']['items'];
+    // print('map' + map.toString());
+
+    return (jsonDecode(data)['listTodos']['items'] as List)
+        .map((todo) => Todo.fromJson(todo))
+        .toList();
   }
 
   @override
   Future<Todo> getById(String id) async {
-    var todos =
-        await Amplify.DataStore.query(Todo.classType, where: Todo.ID.eq(id));
-    return todos[0];
+    String graphQLDocument = '''query GetTodo(\$id: ID!) {
+      getTodo(id: \$id) {
+        id
+        name
+        description
+        priority
+      }
+    }''';
+
+    var operation = Amplify.API.query(
+        request: GraphQLRequest<String>(
+            document: graphQLDocument, variables: {'id': id}));
+
+    var response = await operation.response;
+    var data = response.data;
+
+    print('Query result: ' + data);
+
+    return Todo.fromJson(jsonDecode(data)['getTodo']);
+  }
+
+  @override
+  Future<Todo> add(Todo todo) async {
+    String graphQLDocument =
+        '''mutation CreateTodo(\$name: String!, \$description: String, \$priority: Int!) {
+              createTodo(input: {name: \$name, description: \$description, priority: \$priority}) {
+                id
+                name
+                description
+                priority
+              }
+        }''';
+
+    var operation = Amplify.API.mutate(
+        request: GraphQLRequest<String>(document: graphQLDocument, variables: {
+      'name': todo.name,
+      'description': todo.description,
+      'priority': todo.priority
+    }));
+
+    var response = await operation.response;
+    var data = response.data;
+
+    print('Mutation result: ' + data);
+
+    return Todo.fromJson(jsonDecode(data)['createTodo']);
+  }
+
+  @override
+  Future<Todo> update(Todo todo) async {
+    String graphQLDocument =
+        '''mutation UpdateTodo(\$id: ID!, \$name: String!, \$description: String, \$priority: Int!) {
+          updateTodo(input: { id: \$id, name: \$name, description: \$description, priority: \$priority}) {
+            id
+            name
+            description
+            priority
+          }
+    }''';
+
+    var operation = Amplify.API.mutate(
+        request: GraphQLRequest<String>(document: graphQLDocument, variables: {
+      'id': todo.id,
+      'name': todo.name,
+      'description': todo.description,
+      'priority': todo.priority
+    }));
+
+    var response = await operation.response;
+    var data = response.data;
+
+    print('Query result: ' + data);
+
+    return Todo.fromJson(jsonDecode(data)['updateTodo']);
+  }
+
+  @override
+  Future<void> delete(Todo todo) async {
+    String graphQLDocument = '''mutation deleteTodo(\$id: ID!) {
+          deleteTodo(input: { id: \$id }) {
+            id
+            name
+            description
+          }
+    }''';
+
+    var operation = Amplify.API.mutate(
+        request: GraphQLRequest<String>(
+            document: graphQLDocument, variables: {'id': todo.id}));
+
+    var response = await operation.response;
+    var data = response.data;
+
+    print('Query result: ' + data);
   }
 }

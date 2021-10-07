@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/models/Todo.dart';
+import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class TodoDetailController extends GetxController {
@@ -67,17 +67,17 @@ class TodoDetailController extends GetxController {
 
     if (_todo == null) {
       _todo = Todo(
-          name: titleController.text,
-          description: descriptionController.text,
-          priority: priority.value);
+        null,
+        titleController.text,
+        descriptionController.text,
+        priority.value,
+      );
+      await _todoRepository.add(_todo!);
     } else {
-      _todo = _todo!.copyWith(
-          name: titleController.text,
-          description: descriptionController.text,
-          priority: priority.value);
+      _todo = Todo(_todo!.id, titleController.text, descriptionController.text,
+          priority.value);
+      await _todoRepository.update(_todo!);
     }
-
-    _todoRepository.save(_todo!);
   }
 
   Todo? get todo {
