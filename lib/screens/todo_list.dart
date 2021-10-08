@@ -123,6 +123,6 @@ class TodoList extends StatelessWidget {
       ),
     );
 
-    _controller.getAll();
+    // _controller.getAll();
   }
 }

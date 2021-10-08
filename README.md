@@ -72,6 +72,11 @@ Code coverage - https://app.codecov.io/gh/prawana-perera/todos
 - Amplify example - https://github.com/offlineprogrammer/amplify_todo
     - https://dev.to/offlineprogrammer/a-flutter-todo-app-using-awsamplify-getx-2oii
 
+- AppSync tips 
+    - https://blog.purple-technology.com/lessons-learned-aws-appsync-subscriptions/
+    - https://docs.aws.amazon.com/appsync/latest/devguide/security-authorization-use-cases.html
+    - https://medium.com/@kemalahmed/authorized-appsync-subscriptions-91df3a7a2f5
+
 
 ### Amplify
 
@@ -79,3 +84,8 @@ Sandbox ID
 ```
 amplify pull --sandboxId a337cacd-f3fd-4259-975d-8451800cef2c
 ```
+### Useful tricks
+
+#### IOS simulator: how to close an app
+- Shift+command+H (H TWICE) to simulate the double tap of home button.
+- Swipe your app's screenshot upward to close it.
