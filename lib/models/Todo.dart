@@ -8,8 +8,9 @@ class Todo {
   String name;
   String? description;
   int priority;
+  String? owner;
 
-  Todo(this.id, this.name, this.description, this.priority);
+  Todo(this.id, this.name, this.description, this.priority, {this.owner});
 
   factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
 

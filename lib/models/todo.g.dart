@@ -11,6 +11,7 @@ Todo _$TodoFromJson(Map<String, dynamic> json) => Todo(
       json['name'] as String,
       json['description'] as String?,
       json['priority'] as int,
+      owner: json['owner'] as String?,
     );
 
 Map<String, dynamic> _$TodoToJson(Todo instance) => <String, dynamic>{
@@ -18,4 +19,5 @@ Map<String, dynamic> _$TodoToJson(Todo instance) => <String, dynamic>{
       'name': instance.name,
       'description': instance.description,
       'priority': instance.priority,
+      'owner': instance.owner,
     };

@@ -42,6 +42,7 @@ class AmplifyTodoRepository implements TodoRepository {
           name
           description
           priority
+          owner
         }
         nextToken
       }
@@ -73,6 +74,7 @@ class AmplifyTodoRepository implements TodoRepository {
         name
         description
         priority
+        owner
       }
     }''';
 
@@ -97,6 +99,7 @@ class AmplifyTodoRepository implements TodoRepository {
                 name
                 description
                 priority
+                owner
               }
         }''';
 
@@ -124,6 +127,7 @@ class AmplifyTodoRepository implements TodoRepository {
             name
             description
             priority
+            owner
           }
     }''';
 
@@ -150,6 +154,7 @@ class AmplifyTodoRepository implements TodoRepository {
             id
             name
             description
+            owner
           }
     }''';
 

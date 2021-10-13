@@ -66,12 +66,8 @@ class TodoDetailController extends GetxController {
     // var now = DateTime.now().toUtc();
 
     if (_todo == null) {
-      _todo = Todo(
-        null,
-        titleController.text,
-        descriptionController.text,
-        priority.value,
-      );
+      _todo = Todo(null, titleController.text, descriptionController.text,
+          priority.value);
       await _todoRepository.add(_todo!);
     } else {
       _todo = Todo(_todo!.id, titleController.text, descriptionController.text,
