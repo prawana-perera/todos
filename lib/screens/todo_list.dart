@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todos/controllers/auth_controller.dart';
 import 'package:todos/controllers/todo_list_controller.dart';
 import 'package:get/get.dart';
 import 'package:todos/models/update_result.dart';
 
 class TodoList extends StatelessWidget {
-  final TodosListController _controller = Get.find();
+  final _todosListController = Get.find<TodosListController>();
+  final _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class TodoList extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.white,
             image: DecorationImage(
-                colorFilter: _controller.todos.isEmpty
+                colorFilter: _todosListController.todos.isEmpty
                     ? null
                     : ColorFilter.mode(
                         Colors.black.withOpacity(0.2), BlendMode.dstATop),
@@ -24,8 +26,27 @@ class TodoList extends StatelessWidget {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: Text('My Todos'),
+            actions: [
+              PopupMenuButton(
+                onSelected: (String value) {
+                  if (value == 'logout') {
+                    _authController.logOut();
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem<String>(
+                        value: 'logout',
+                        child: ListTile(
+                          leading: Icon(Icons.logout),
+                          title: Text('Logout'),
+                        ))
+                  ];
+                },
+              )
+            ],
           ),
-          body: _controller.isLoading.value
+          body: _todosListController.isLoading.value
               ? Center(child: CircularProgressIndicator())
               : _todoListItems(),
           floatingActionButton: Container(
@@ -48,9 +69,9 @@ class TodoList extends StatelessWidget {
 
   ListView _todoListItems() {
     return ListView.builder(
-      itemCount: _controller.todos.length,
+      itemCount: _todosListController.todos.length,
       itemBuilder: (BuildContext context, int position) {
-        var todo = _controller.todos[position];
+        var todo = _todosListController.todos[position];
 
         return Card(
           color: Colors.white.withOpacity(0.6),

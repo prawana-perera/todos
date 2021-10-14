@@ -11,7 +11,7 @@ const menuDelete = 'Delete';
 const menuIconMap = {menuDelete: Icons.delete, menuShare: Icons.share};
 
 class TodoDetail extends StatelessWidget {
-  final TodoDetailController _controller = Get.find();
+  final _todoDetailController = Get.find<TodoDetailController>();
 
   final _actionChoices = [menuDelete, menuShare];
 
@@ -20,15 +20,15 @@ class TodoDetail extends StatelessWidget {
     var textStyle = Theme.of(context).textTheme.headline6;
 
     return Form(
-        key: _controller.formKey,
+        key: _todoDetailController.formKey,
         child: Scaffold(
           appBar: AppBar(
-              title: Text(_controller.pageTitle.value),
+              title: Text(_todoDetailController.pageTitle.value),
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () => _back(),
               ),
-              actions: _controller.isEditing.value
+              actions: _todoDetailController.isEditing.value
                   ? <Widget>[
                       PopupMenuButton(
                           onSelected: _selectAction,
@@ -48,7 +48,7 @@ class TodoDetail extends StatelessWidget {
               Column(
                 children: <Widget>[
                   TextFormField(
-                    controller: _controller.titleController,
+                    controller: _todoDetailController.titleController,
                     style: textStyle,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -69,7 +69,7 @@ class TodoDetail extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
                     child: TextFormField(
-                      controller: _controller.descriptionController,
+                      controller: _todoDetailController.descriptionController,
                       style: textStyle,
                       decoration: InputDecoration(
                           labelText: 'Description',
@@ -88,10 +88,10 @@ class TodoDetail extends StatelessWidget {
                                 ))
                             .toList(),
                         style: textStyle,
-                        value: _controller.priority.toString(),
+                        value: _todoDetailController.priority.toString(),
                         onChanged: (String? value) {
                           if (value != null) {
-                            _controller.priority(int.parse(value));
+                            _todoDetailController.priority(int.parse(value));
                           }
                         },
                       );
@@ -137,18 +137,23 @@ class TodoDetail extends StatelessWidget {
   }
 
   void _delete() async {
-    await _controller.deleteTodo();
-    _back(result: UpdateResult(UpdateStatus.deleted, _controller.todo));
+    await _todoDetailController.deleteTodo();
+    _back(
+        result: UpdateResult(UpdateStatus.deleted, _todoDetailController.todo));
   }
 
   void _save() async {
-    if (_controller.formKey.currentState!.validate()) {
-      await _controller.saveTodo();
+    if (_todoDetailController.formKey.currentState!.validate()) {
+      await _todoDetailController.saveTodo();
 
-      if (_controller.isEditing.value) {
-        _back(result: UpdateResult(UpdateStatus.updated, _controller.todo));
+      if (_todoDetailController.isEditing.value) {
+        _back(
+            result:
+                UpdateResult(UpdateStatus.updated, _todoDetailController.todo));
       } else {
-        _back(result: UpdateResult(UpdateStatus.created, _controller.todo));
+        _back(
+            result:
+                UpdateResult(UpdateStatus.created, _todoDetailController.todo));
       }
     }
   }

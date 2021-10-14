@@ -4,7 +4,6 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:todos/models/data_event_subscription.dart';
 
-import '../amplifyconfiguration.dart';
 import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
@@ -21,18 +20,6 @@ class AmplifyGraphQLSubscription extends DataEventSubscription {
 }
 
 class AmplifyTodoRepository implements TodoRepository {
-  static Future<void> configure() async {
-    if (!Amplify.isConfigured) {
-      try {
-        Amplify.addPlugin(AmplifyAPI());
-        await Amplify.configure(amplifyconfig);
-      } catch (e) {
-        // error handling can be improved for sure!
-        print('An error occurred while configuring Amplify: $e');
-      }
-    }
-  }
-
   @override
   Future<List<Todo>> getAll() async {
     String graphQLDocument = '''query ListTodos {
@@ -40,11 +27,9 @@ class AmplifyTodoRepository implements TodoRepository {
         items {
           id
           name
-          description
           priority
-          owner
+          description
         }
-        nextToken
       }
     }''';
 
@@ -74,7 +59,6 @@ class AmplifyTodoRepository implements TodoRepository {
         name
         description
         priority
-        owner
       }
     }''';
 
@@ -99,7 +83,6 @@ class AmplifyTodoRepository implements TodoRepository {
                 name
                 description
                 priority
-                owner
               }
         }''';
 
@@ -127,7 +110,6 @@ class AmplifyTodoRepository implements TodoRepository {
             name
             description
             priority
-            owner
           }
     }''';
 
@@ -154,7 +136,7 @@ class AmplifyTodoRepository implements TodoRepository {
             id
             name
             description
-            owner
+            priority
           }
     }''';
 

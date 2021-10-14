@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:todos/models/data_event_subscription.dart';
@@ -6,7 +6,8 @@ import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class TodosListController extends GetxController {
-  final todoRepository = Get.find<TodoRepository>();
+  final _todoRepository = Get.find<TodoRepository>();
+
   DataEventSubscription? _newTodosSubscription;
 
   List<Todo> todos = <Todo>[].obs;
@@ -21,7 +22,7 @@ class TodosListController extends GetxController {
   void getAll() async {
     try {
       isLoading(true);
-      final allTodos = await todoRepository.getAll();
+      final allTodos = await _todoRepository.getAll();
       print('all todos' + allTodos.toString());
       todos.assignAll(allTodos);
       // TODO: repo query should sort first
@@ -39,7 +40,7 @@ class TodosListController extends GetxController {
   }
 
   void _subscribeToNewTodos() {
-    _newTodosSubscription = todoRepository.subscribe(
+    _newTodosSubscription = _todoRepository.subscribe(
       onCreate: (Todo todo) {
         todos.add(todo);
         todos.sort((a, b) => b.priority.compareTo(a.priority));
