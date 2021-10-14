@@ -1,3 +1,4 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:get/get.dart';
 import 'package:todos/models/user.dart';
 import 'package:todos/repositories/auth_repository.dart';
@@ -7,6 +8,7 @@ class AuthController extends GetxController {
 
   var isLoggedIn = false.obs;
   var isLoading = false.obs;
+  var isInavalidUser = false.obs;
   var isError = false.obs;
   var loggedInUser = Rx<User?>(null);
 
@@ -17,12 +19,16 @@ class AuthController extends GetxController {
     super.onReady();
   }
 
-  void logIn(String username, String password) async {
+  Future<void> logIn(String username, String password) async {
     try {
       isLoading.value = true;
+      isInavalidUser.value = false;
+      await Future.delayed(const Duration(seconds: 5));
       final user = await _authRepository.logIn(username, password);
       loggedInUser.value = user;
       isLoggedIn.value = user != null;
+    } on NotAuthorizedException {
+      isInavalidUser.value = true;
     } catch (e) {
       print('AppController.logIn: $e');
       isError.value = true;
@@ -57,6 +63,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       final user = await _authRepository.getLoggedInUser();
+      await Future.delayed(const Duration(seconds: 5));
       loggedInUser.value = user;
       isLoggedIn.value = user != null;
     } catch (e) {
