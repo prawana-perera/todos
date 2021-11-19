@@ -59,24 +59,51 @@ class Login extends StatelessWidget {
                       ),
                       visible: _loginController.isInavalidUser.value,
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: ElevatedButton.icon(
-                          icon: Icon(Icons.login),
-                          onPressed: _loginController.isLoading.value
-                              ? null
-                              : () => _loginController.logIn(),
-                          label: Text('Login'),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
-                            textStyle: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.only(top: 10, left: 10, right: 10),
+                              child: ElevatedButton.icon(
+                                icon: Icon(Icons.login),
+                                onPressed: _loginController.isLoading.value
+                                    ? null
+                                    : () => _loginController.logIn(),
+                                label: Text('Login'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 15),
+                                  textStyle: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            )),
+                      ],
                     ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.only(top: 15, left: 10, right: 10),
+                              child: ElevatedButton.icon(
+                                icon: Icon(Icons.person_add),
+                                onPressed: _loginController.isLoading.value
+                                    ? null
+                                    : () async => await Get.toNamed('/signup'),
+                                label: Text('Create Account'),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 15),
+                                  textStyle: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            )),
+                      ],
+                    )
                   ],
                 ),
               )),

@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todos/bindings/app_bindings.dart';
 import 'package:todos/bindings/login_binding.dart';
+import 'package:todos/bindings/signup_binding.dart';
 
 import 'package:todos/bindings/todo_detail_binding.dart';
 import 'package:todos/bindings/todo_list_binding.dart';
 import 'package:todos/screens/loading.dart';
 import 'package:todos/screens/login.dart';
+import 'package:todos/screens/signup.dart';
 
 import 'package:todos/screens/todo_detail.dart';
 import 'package:todos/screens/todo_list.dart';
@@ -62,6 +64,7 @@ class _TodosAppState extends State<TodosApp> {
   List<GetPage> _getRoutes() {
     return [
       GetPage(name: '/login', page: () => Login(), binding: LoginBinding()),
+      GetPage(name: '/signup', page: () => SignUp(), binding: SignUpBinding()),
       GetPage(
           name: '/todos', page: () => TodoList(), binding: TodoListBinding()),
       GetPage(
