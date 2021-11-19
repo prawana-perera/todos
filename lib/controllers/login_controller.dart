@@ -54,6 +54,8 @@ class LoginController extends GetxController {
         ),
       ));
 
+      // Clear cached login
+      await _authController.logOut();
       await _authController.logIn(
           usernameController.text, passwordController.text);
 

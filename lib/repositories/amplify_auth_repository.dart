@@ -8,7 +8,11 @@ class AmplifyAuthRepository extends AuthRepository {
   Future<User?> getLoggedInUser() async {
     try {
       final authUser = await Amplify.Auth.getCurrentUser();
-      return User('1', authUser.username, 'Test User');
+
+      // Can fetch additional user data
+      // final userDetails = await Amplify.Auth.fetchUserAttributes();
+
+      return User(authUser.userId, authUser.username, 'Test User');
     } on SignedOutException {
       return null;
     } catch (e) {
@@ -20,7 +24,9 @@ class AmplifyAuthRepository extends AuthRepository {
   Future<User?> logIn(String username, password) async {
     try {
       await Amplify.Auth.signIn(username: username, password: password);
-      return User('1', username, 'Test User');
+      final authUser = await Amplify.Auth.getCurrentUser();
+
+      return User(authUser.userId, authUser.username, 'Test User');
     } catch (e) {
       throw e;
     }

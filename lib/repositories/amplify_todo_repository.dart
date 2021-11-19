@@ -5,6 +5,7 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:todos/models/data_event_subscription.dart';
 
 import 'package:todos/models/todo.dart';
+import 'package:todos/models/user.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class AmplifyGraphQLSubscription extends DataEventSubscription {
@@ -22,14 +23,19 @@ class AmplifyGraphQLSubscription extends DataEventSubscription {
 class AmplifyTodoRepository implements TodoRepository {
   @override
   Future<List<Todo>> getAll() async {
-    String graphQLDocument = '''query ListTodos {
-      listTodos {
+    String graphQLDocument = '''query GetAll {
+      getAll {
         items {
           id
-          name
-          priority
+          title
           description
+          priority
+          status
+          owner
+          createdAt
+          modifiedAt
         }
+        nextToken
       }
     }''';
 
@@ -46,19 +52,23 @@ class AmplifyTodoRepository implements TodoRepository {
     // Map<String, dynamic> map = jsonDecode(data)['listTodos']['items'];
     // print('map' + map.toString());
 
-    return (jsonDecode(data)['listTodos']['items'] as List)
+    return (jsonDecode(data)['getAll']['items'] as List)
         .map((todo) => Todo.fromJson(todo))
         .toList();
   }
 
   @override
   Future<Todo> getById(String id) async {
-    String graphQLDocument = '''query GetTodo(\$id: ID!) {
-      getTodo(id: \$id) {
+    String graphQLDocument = '''query GetById(\$id: ID!) {
+      getById(id: \$id) {
         id
-        name
+        title
         description
         priority
+        status
+        owner
+        createdAt
+        modifiedAt
       }
     }''';
 
@@ -71,24 +81,28 @@ class AmplifyTodoRepository implements TodoRepository {
 
     print('Query result: ' + data);
 
-    return Todo.fromJson(jsonDecode(data)['getTodo']);
+    return Todo.fromJson(jsonDecode(data)['getById']);
   }
 
   @override
   Future<Todo> add(Todo todo) async {
     String graphQLDocument =
-        '''mutation CreateTodo(\$name: String!, \$description: String, \$priority: Int!) {
-              createTodo(input: {name: \$name, description: \$description, priority: \$priority}) {
+        '''mutation Create(\$title: String!, \$description: String, \$priority: Priority!) {
+              create(input: {title: \$title, description: \$description, priority: \$priority}) {
                 id
-                name
+                title
                 description
                 priority
+                status
+                owner
+                createdAt
+                modifiedAt
               }
         }''';
 
     var operation = Amplify.API.mutate(
         request: GraphQLRequest<String>(document: graphQLDocument, variables: {
-      'name': todo.name,
+      'title': todo.title,
       'description': todo.description,
       'priority': todo.priority
     }));
@@ -98,25 +112,29 @@ class AmplifyTodoRepository implements TodoRepository {
 
     print('Mutation result: ' + data);
 
-    return Todo.fromJson(jsonDecode(data)['createTodo']);
+    return Todo.fromJson(jsonDecode(data)['create']);
   }
 
   @override
   Future<Todo> update(Todo todo) async {
     String graphQLDocument =
-        '''mutation UpdateTodo(\$id: ID!, \$name: String!, \$description: String, \$priority: Int!) {
-          updateTodo(input: { id: \$id, name: \$name, description: \$description, priority: \$priority}) {
-            id
-            name
-            description
-            priority
+        '''mutation Update(\$id: ID!, \$title: String!, \$description: String, \$priority: Priority!) {
+            update(input: { id: \$id, title: \$title, description: \$description, priority: \$priority}) {
+              id
+              title
+              description
+              priority
+              status
+              owner
+              createdAt
+              modifiedAt
           }
     }''';
 
     var operation = Amplify.API.mutate(
         request: GraphQLRequest<String>(document: graphQLDocument, variables: {
       'id': todo.id,
-      'name': todo.name,
+      'title': todo.title,
       'description': todo.description,
       'priority': todo.priority
     }));
@@ -126,17 +144,21 @@ class AmplifyTodoRepository implements TodoRepository {
 
     print('Query result: ' + data);
 
-    return Todo.fromJson(jsonDecode(data)['updateTodo']);
+    return Todo.fromJson(jsonDecode(data)['update']);
   }
 
   @override
   Future<void> delete(Todo todo) async {
-    String graphQLDocument = '''mutation deleteTodo(\$id: ID!) {
-          deleteTodo(input: { id: \$id }) {
+    String graphQLDocument = '''mutation Delete(\$id: ID!) {
+          delete(id: \$id) {
             id
-            name
+            title
             description
             priority
+            status
+            owner
+            createdAt
+            modifiedAt
           }
     }''';
 
@@ -151,101 +173,122 @@ class AmplifyTodoRepository implements TodoRepository {
   }
 
   @override
-  DataEventSubscription subscribe(
+  DataEventSubscription subscribe(User user,
       {required OnCreate onCreate,
       required OnUpdate onUpdate,
       required OnDelete onDelete}) {
     return AmplifyGraphQLSubscription([
-      _subscribeOnCreate(onCreate),
-      _subscribeOnUpdate(onUpdate),
-      _subscribeOnDelete(onDelete)
+      _subscribeOnCreate(user, onCreate),
+      _subscribeOnUpdate(user, onUpdate),
+      _subscribeOnDelete(user, onDelete)
     ]);
   }
 
-  GraphQLSubscriptionOperation _subscribeOnCreate(OnCreate onCreate) {
-    String graphQLDocument = '''subscription OnCreateTodo {
-        onCreateTodo {
+  GraphQLSubscriptionOperation _subscribeOnCreate(
+      User user, OnCreate onCreate) {
+    String graphQLDocument = '''subscription OnTodoAdded(\$owner: String!) {
+        onTodoAdded(owner: \$owner) {
           id
-          name
+          title
           description
           priority
+          status
+          owner
+          createdAt
+          modifiedAt
         }
       }''';
 
     var opertation = Amplify.API.subscribe(
-        request: GraphQLRequest<String>(document: graphQLDocument),
+        request: GraphQLRequest<String>(
+            document: graphQLDocument, variables: {'owner': user.id}),
         onData: (event) {
           print(
-              'onCreateTodo - Subscription event data received: ${event.data}');
+              'onTodoAdded - Subscription event data received: ${event.data}');
           onCreate(
-              Todo.fromJson(jsonDecode(event.data as String)['onCreateTodo']));
+              Todo.fromJson(jsonDecode(event.data as String)['onTodoAdded']));
         },
         onEstablished: () {
-          print('onCreateTodo - Subscription established');
+          print('onTodoAdded - Subscription established');
         },
         onError: (e) {
-          print('onCreateTodo - Subscription failed with error: $e');
+          print('onTodoAdded - Subscription failed with error: $e');
         },
         onDone: () {
-          print('onCreateTodo - Subscription has been closed successfully');
+          print('onTodoAdded - Subscription has been closed successfully');
         });
 
     return opertation;
   }
 
-  GraphQLSubscriptionOperation _subscribeOnUpdate(OnUpdate onUpdate) {
-    String graphQLDocument = '''subscription OnUpdateTodo {
-        onUpdateTodo {
+  GraphQLSubscriptionOperation _subscribeOnUpdate(
+      User user, OnUpdate onUpdate) {
+    String graphQLDocument = '''subscription OnTodoUpdated(\$owner: String!) {
+        onTodoUpdated(owner: \$owner) {
+          id
+          title
           description
-          id
-          name
           priority
+          status
+          owner
+          createdAt
+          modifiedAt
         }
       }''';
 
     var opertation = Amplify.API.subscribe(
-        request: GraphQLRequest<String>(document: graphQLDocument),
+        request: GraphQLRequest<String>(
+            document: graphQLDocument, variables: {'owner': user.id}),
         onData: (event) {
           print(
-              'onUpdateTodo - Subscription event data received: ${event.data}');
+              'onTodoUpdated - Subscription event data received: ${event.data}');
           onUpdate(
-              Todo.fromJson(jsonDecode(event.data as String)['onUpdateTodo']));
+              Todo.fromJson(jsonDecode(event.data as String)['onTodoUpdated']));
         },
         onEstablished: () {
-          print('onUpdateTodo - Subscription established');
+          print('onTodoUpdated - Subscription established');
         },
         onError: (e) {
-          print('onUpdateTodo - Subscription failed with error: $e');
+          print('onTodoUpdated - Subscription failed with error: $e');
         },
         onDone: () {
-          print('onUpdateTodo - Subscription has been closed successfully');
+          print('onTodoUpdated - Subscription has been closed successfully');
         });
 
     return opertation;
   }
 
-  GraphQLSubscriptionOperation _subscribeOnDelete(OnDelete onDelete) {
-    String graphQLDocument = '''subscription OnDeleteTodo {
-        onDeleteTodo {
+  GraphQLSubscriptionOperation _subscribeOnDelete(
+      User user, OnDelete onDelete) {
+    String graphQLDocument = '''subscription OnTodoDeleted(\$owner: String!) {
+        onTodoDeleted(owner: \$owner) {
           id
+          title
+          description
+          priority
+          status
+          owner
+          createdAt
+          modifiedAt
         }
       }''';
 
     var opertation = Amplify.API.subscribe(
-        request: GraphQLRequest<String>(document: graphQLDocument),
+        request: GraphQLRequest<String>(
+            document: graphQLDocument, variables: {'owner': user.id}),
         onData: (event) {
           print(
-              'onDeleteTodo - Subscription event data received: ${event.data}');
-          onDelete(jsonDecode(event.data as String)['onDeleteTodo']['id']);
+              'onTodoDeleted - Subscription event data received: ${event.data}');
+          onDelete(jsonDecode(event.data as String)['onTodoDeleted']['id']);
         },
         onEstablished: () {
-          print('onDeleteTodo - Subscription established');
+          print('onTodoDeleted - Subscription established');
         },
         onError: (e) {
-          print('onDeleteTodo - Subscription failed with error: $e');
+          print('onTodoDeleted - Subscription failed with error: $e');
         },
         onDone: () {
-          print('onDeleteTodo - Subscription has been closed successfully');
+          print('onTodoDeleted - Subscription has been closed successfully');
         });
 
     return opertation;

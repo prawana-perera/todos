@@ -13,7 +13,7 @@ class TodoDetailController extends GetxController {
 
   var isLoading = false.obs;
   var title = ''.obs;
-  var priority = 1.obs;
+  var priority = 'LOW'.obs;
   var description = ''.obs;
   var pageTitle = 'Add a todo'.obs;
   var isEditing = false.obs;
@@ -47,7 +47,7 @@ class TodoDetailController extends GetxController {
       _todo = await _todoRepository.getById(id);
 
       // Handle in case todo not found, throw error? Navigate back with message
-      titleController.text = _todo!.name;
+      titleController.text = _todo!.title;
       descriptionController.text = _todo!.description!;
       priority(_todo!.priority);
     } catch (e) {

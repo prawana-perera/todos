@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:todos/controllers/todo_detail_controller.dart';
 import 'package:todos/models/update_result.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
+const priorities = {'LOW', 'MEDIUM', 'HIGH'};
 
 const menuShare = 'Share';
 const menuDelete = 'Delete';
@@ -81,17 +83,18 @@ class TodoDetail extends StatelessWidget {
                   ListTile(
                     title: Obx(() {
                       return DropdownButton<String>(
-                        items: priorityMap.entries
+                        items: priorities
                             .map((p) => DropdownMenuItem<String>(
-                                  child: Text(p.value),
-                                  value: p.key.toString(),
+                                  child: Text(toBeginningOfSentenceCase(
+                                      p.toLowerCase())!),
+                                  value: p,
                                 ))
                             .toList(),
                         style: textStyle,
-                        value: _todoDetailController.priority.toString(),
+                        value: _todoDetailController.priority.value,
                         onChanged: (String? value) {
                           if (value != null) {
-                            _todoDetailController.priority(int.parse(value));
+                            _todoDetailController.priority(value);
                           }
                         },
                       );

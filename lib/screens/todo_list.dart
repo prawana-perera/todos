@@ -80,9 +80,9 @@ class TodoList extends StatelessWidget {
             contentPadding: EdgeInsets.all(10),
             leading: CircleAvatar(
               backgroundColor: _getPrioritisedColor(todo.priority),
-              child: Text(todo.priority.toString()),
+              child: Text(todo.priority[0]),
             ),
-            title: Text(todo.name,
+            title: Text(todo.title,
                 style: TextStyle(
                     fontSize: 18,
                     color: Colors.black,
@@ -97,11 +97,11 @@ class TodoList extends StatelessWidget {
     );
   }
 
-  Color _getPrioritisedColor(int priority) {
+  Color _getPrioritisedColor(String priority) {
     switch (priority) {
-      case 1:
+      case 'LOW':
         return Colors.green;
-      case 2:
+      case 'MEDIUM':
         return Colors.orangeAccent;
       default:
         return Colors.red;
@@ -121,13 +121,13 @@ class TodoList extends StatelessWidget {
 
     switch (result.status) {
       case UpdateStatus.created:
-        message = '${result.todo!.name} added.';
+        message = '${result.todo!.title} added.';
         break;
       case UpdateStatus.updated:
-        message = '${result.todo!.name} updated.';
+        message = '${result.todo!.title} updated.';
         break;
       case UpdateStatus.deleted:
-        message = '${result.todo!.name} deleted.';
+        message = '${result.todo!.title} deleted.';
         break;
       default: // Without this, you see a WARNING.
     }

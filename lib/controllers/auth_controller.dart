@@ -23,21 +23,22 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       isInavalidUser.value = false;
-      await Future.delayed(const Duration(seconds: 5));
       final user = await _authRepository.logIn(username, password);
       loggedInUser.value = user;
       isLoggedIn.value = user != null;
     } on NotAuthorizedException {
       isInavalidUser.value = true;
+    } on UserNotFoundException {
+      isInavalidUser.value = true;
     } catch (e) {
-      print('AppController.logIn: $e');
+      print('AuthController.logIn: $e');
       isError.value = true;
     } finally {
       isLoading.value = false;
     }
   }
 
-  void logOut() async {
+  Future<void> logOut() async {
     try {
       isLoading.value = true;
       await _authRepository.logOut();
@@ -63,7 +64,6 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       final user = await _authRepository.getLoggedInUser();
-      await Future.delayed(const Duration(seconds: 5));
       loggedInUser.value = user;
       isLoggedIn.value = user != null;
     } catch (e) {

@@ -5,12 +5,12 @@ part 'todo.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Todo {
   String? id;
-  String name;
+  String title;
   String? description;
-  int priority;
+  String priority;
   String? owner;
 
-  Todo(this.id, this.name, this.description, this.priority, {this.owner});
+  Todo(this.id, this.title, this.description, this.priority, {this.owner});
 
   factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
 

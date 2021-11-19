@@ -5,8 +5,11 @@ import 'package:todos/models/data_event_subscription.dart';
 import 'package:todos/models/todo.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
+import 'auth_controller.dart';
+
 class TodosListController extends GetxController {
   final _todoRepository = Get.find<TodoRepository>();
+  final _authController = Get.find<AuthController>();
 
   DataEventSubscription? _newTodosSubscription;
 
@@ -41,6 +44,7 @@ class TodosListController extends GetxController {
 
   void _subscribeToNewTodos() {
     _newTodosSubscription = _todoRepository.subscribe(
+      _authController.loggedInUser.value!,
       onCreate: (Todo todo) {
         todos.add(todo);
         todos.sort((a, b) => b.priority.compareTo(a.priority));
