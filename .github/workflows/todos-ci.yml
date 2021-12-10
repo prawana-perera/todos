@@ -34,6 +34,14 @@ jobs:
         with:
           flutter-version: '2.5.3'
           channel: 'stable'
+      - name: Generate dummy env file
+        run: |
+          echo "APPSYNC_ENDPOINT=TBA" >> .env
+          echo "APPSYNC_AUTHORIZATION_TYPE=TBA" >> .env
+          echo "COGNITO_USER_POOL_ID=TBA" >> .env
+          echo "COGNITO_APP_CLIENT_ID=TBA" >> .env
+          echo "COGNITO_AUTH_FLOW_TYPE=TBA" >> .env
+          echo "AWS_REGION=TBA" >> .env
       - name: Restore packages
         run: flutter pub get
       - name: Check code lint rules
