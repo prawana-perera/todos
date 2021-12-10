@@ -54,6 +54,14 @@ jobs:
           directory: ./coverage/
           fail_ci_if_error: true
           verbose: true
+      - name: Generate env file (TBA env specific)
+        run: |
+          echo "APPSYNC_ENDPOINT=$APPSYNC_ENDPOINT" >> .env
+          echo "APPSYNC_AUTHORIZATION_TYPE=AMAZON_COGNITO_USER_POOLS" >> .env
+          echo "COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
+          echo "COGNITO_APP_CLIENT_ID=$COGNITO_APP_CLIENT_ID" >> .env
+          echo "COGNITO_AUTH_FLOW_TYPE=USER_SRP_AUTH" >> .env
+          echo "AWS_REGION=ap-southeast-2" >> .env
       - name: Configure Keystore for Android
         run: |
           echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
