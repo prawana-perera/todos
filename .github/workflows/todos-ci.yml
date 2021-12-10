@@ -47,7 +47,7 @@ jobs:
       - name: Check code lint rules
         run: flutter format --set-exit-if-changed .
       - name: Run static anaylysis
-        run: ls -al lib/models && flutter analyze .
+        run: flutter analyze .
       - name: Run Flutter code coverage workaround
         run: ./flutter-test-coverage-fix.sh
       - name: Run Unit Tests
