@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:todos/controllers/todo_detail_controller.dart';
-import 'package:todos/models/update_result.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
+const priorities = {'LOW', 'MEDIUM', 'HIGH'};
 
 const menuShare = 'Share';
 const menuDelete = 'Delete';
@@ -11,7 +12,7 @@ const menuDelete = 'Delete';
 const menuIconMap = {menuDelete: Icons.delete, menuShare: Icons.share};
 
 class TodoDetail extends StatelessWidget {
-  final TodoDetailController _controller = Get.find();
+  final _todoDetailController = Get.find<TodoDetailController>();
 
   final _actionChoices = [menuDelete, menuShare];
 
@@ -20,11 +21,15 @@ class TodoDetail extends StatelessWidget {
     var textStyle = Theme.of(context).textTheme.headline6;
 
     return Form(
-        key: _controller.formKey,
+        key: _todoDetailController.formKey,
         child: Scaffold(
           appBar: AppBar(
-              title: Text(_controller.pageTitle.value),
-              actions: _controller.isEditing.value
+              title: Text(_todoDetailController.pageTitle.value),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => _todoDetailController.back(),
+              ),
+              actions: _todoDetailController.isEditing.value
                   ? <Widget>[
                       PopupMenuButton(
                           onSelected: _selectAction,
@@ -44,7 +49,7 @@ class TodoDetail extends StatelessWidget {
               Column(
                 children: <Widget>[
                   TextFormField(
-                    controller: _controller.titleController,
+                    controller: _todoDetailController.titleController,
                     style: textStyle,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -65,7 +70,7 @@ class TodoDetail extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15),
                     child: TextFormField(
-                      controller: _controller.descriptionController,
+                      controller: _todoDetailController.descriptionController,
                       style: textStyle,
                       decoration: InputDecoration(
                           labelText: 'Description',
@@ -77,17 +82,18 @@ class TodoDetail extends StatelessWidget {
                   ListTile(
                     title: Obx(() {
                       return DropdownButton<String>(
-                        items: priorityMap.entries
+                        items: priorities
                             .map((p) => DropdownMenuItem<String>(
-                                  child: Text(p.value),
-                                  value: p.key.toString(),
+                                  child: Text(toBeginningOfSentenceCase(
+                                      p.toLowerCase())!),
+                                  value: p,
                                 ))
                             .toList(),
                         style: textStyle,
-                        value: _controller.priority.toString(),
+                        value: _todoDetailController.priority.value,
                         onChanged: (String? value) {
                           if (value != null) {
-                            _controller.priority(int.parse(value));
+                            _todoDetailController.priority(value);
                           }
                         },
                       );
@@ -103,7 +109,7 @@ class TodoDetail extends StatelessWidget {
                           child: ElevatedButton.icon(
                             icon: Icon(Icons.save),
                             onPressed: () {
-                              _save();
+                              _todoDetailController.saveTodo();
                             },
                             label: Text('Save'),
                             style: ElevatedButton.styleFrom(
@@ -126,31 +132,9 @@ class TodoDetail extends StatelessWidget {
   void _selectAction(String value) {
     switch (value) {
       case menuDelete:
-        _delete();
+        _todoDetailController.deleteTodo();
         break;
       default:
     }
-  }
-
-  void _delete() async {
-    await _controller.deleteTodo();
-    _back(result: UpdateResult(UpdateStatus.deleted, _controller.todo));
-  }
-
-  void _save() async {
-    if (_controller.formKey.currentState!.validate()) {
-      await _controller.saveTodo();
-
-      if (_controller.isEditing.value) {
-        _back(result: UpdateResult(UpdateStatus.updated, _controller.todo));
-      } else {
-        _back(result: UpdateResult(UpdateStatus.created, _controller.todo));
-      }
-    }
-  }
-
-  void _back(
-      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
-    Get.back(result: result);
   }
 }

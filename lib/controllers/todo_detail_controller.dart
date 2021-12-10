@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/src/database/database.dart';
-import 'package:moor/moor.dart' as moor;
+import 'package:todos/models/todo.dart';
+import 'package:todos/models/update_result.dart';
+import 'package:todos/repositories/todo_repository.dart';
 
 class TodoDetailController extends GetxController {
-  TodosDatabase _db = Get.find();
+  final _todoRepository = Get.find<TodoRepository>();
 
   final formKey = GlobalKey<FormState>();
   var titleController = TextEditingController();
@@ -13,19 +14,23 @@ class TodoDetailController extends GetxController {
 
   var isLoading = false.obs;
   var title = ''.obs;
-  var priority = 1.obs;
+  var priority = 'LOW'.obs;
   var description = ''.obs;
   var pageTitle = 'Add a todo'.obs;
   var isEditing = false.obs;
 
   Todo? _todo;
 
+  Todo? get todo {
+    return _todo;
+  }
+
   @override
   onInit() async {
     String? id = Get.parameters['id'];
 
     if (id != null) {
-      _fetchTodo(int.parse(id));
+      _fetchTodo(id);
       pageTitle('Edit todo');
       isEditing(true);
     }
@@ -41,10 +46,10 @@ class TodoDetailController extends GetxController {
     super.dispose();
   }
 
-  void _fetchTodo(int id) async {
+  void _fetchTodo(String id) async {
     try {
       isLoading(true);
-      _todo = await _db.getTodo(id);
+      _todo = await _todoRepository.getById(id);
 
       // Handle in case todo not found, throw error? Navigate back with message
       titleController.text = _todo!.title;
@@ -59,42 +64,32 @@ class TodoDetailController extends GetxController {
   }
 
   Future deleteTodo() async {
-    await _db.deleteTodo(_todo!);
+    await _todoRepository.delete(_todo!);
+    back(result: UpdateResult(UpdateStatus.deleted, todo));
   }
 
   Future saveTodo() async {
-    var now = DateTime.now().toUtc();
+    if (formKey.currentState!.validate()) {
+      if (_todo == null) {
+        _todo = Todo(null, titleController.text, descriptionController.text,
+            priority.value);
+        await _todoRepository.add(_todo!);
+      } else {
+        _todo = Todo(_todo!.id, titleController.text,
+            descriptionController.text, priority.value);
+        await _todoRepository.update(_todo!);
+      }
 
-    if (_todo == null) {
-      var todo = TodosCompanion.insert(
-          title: titleController.text,
-          // Not good, better way to solve
-          description: moor.Value(descriptionController.text),
-          priority: priority.value,
-          createdAt: now,
-          updatedAt: now);
-
-      var id = await _db.addTodo(todo);
-      _todo = Todo(
-          id: id,
-          title: todo.title.value,
-          description: todo.description.value,
-          priority: todo.priority.value,
-          createdAt: todo.createdAt.value,
-          updatedAt: todo.updatedAt.value);
-    } else {
-      Todo todo = _todo!.copyWith(
-          title: titleController.text,
-          description: descriptionController.text,
-          priority: priority.value,
-          updatedAt: now);
-
-      await _db.updateTodo(todo);
-      _todo = todo;
+      if (isEditing.value) {
+        back(result: UpdateResult(UpdateStatus.updated, todo));
+      } else {
+        back(result: UpdateResult(UpdateStatus.created, todo));
+      }
     }
   }
 
-  Todo? get todo {
-    return _todo;
+  void back(
+      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
+    Get.back(result: result);
   }
 }

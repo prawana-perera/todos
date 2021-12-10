@@ -53,3 +53,5 @@ coverage
 
 # Store specific access keys
 **/google-play.json
+
+.env

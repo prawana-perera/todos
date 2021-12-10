@@ -24,8 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  moor: ^4.5.0
-  sqlite3_flutter_libs: ^0.5.0
   path_provider: ^2.0.2
   path: ^1.8.0
 
@@ -36,13 +34,22 @@ dependencies:
   http: ^0.13.3
   get: ^4.3.8
 
+  amplify_core: ^0.2.4
+  amplify_flutter: ^0.2.4
+  amplify_api: ^0.2.4
+  amplify_auth_cognito: ^0.2.4
+
+  flutter_dotenv: ^5.0.2
+  json_annotation: ^4.1.0
+
 dev_dependencies:
+  test: any
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.9.1"
-  moor_generator: # use the latest version
   build_runner:
   flutter_native_splash: ^1.2.4
+  json_serializable: ^5.0.2
 
 flutter_icons:
   #  image_path: "assets/images/icon-128x128.png"
@@ -69,9 +76,11 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-#  assets:
-#    - 'images/lion.png'
-#   - images/a_dot_ham.jpeg
+  assets:
+    - 'assets/images/todos_background.png'
+    - 'assets/images/login.png'
+    - 'assets/images/todos_sign_up.png'
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
