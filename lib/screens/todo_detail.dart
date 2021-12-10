@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/controllers/todo_detail_controller.dart';
-import 'package:todos/models/update_result.dart';
 
 const priorityMap = {1: 'Low', 2: 'Medium', 3: 'High'};
 const priorities = {'LOW', 'MEDIUM', 'HIGH'};
@@ -28,7 +27,7 @@ class TodoDetail extends StatelessWidget {
               title: Text(_todoDetailController.pageTitle.value),
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () => _back(),
+                onPressed: () => _todoDetailController.back(),
               ),
               actions: _todoDetailController.isEditing.value
                   ? <Widget>[
@@ -110,7 +109,7 @@ class TodoDetail extends StatelessWidget {
                           child: ElevatedButton.icon(
                             icon: Icon(Icons.save),
                             onPressed: () {
-                              _save();
+                              _todoDetailController.saveTodo();
                             },
                             label: Text('Save'),
                             style: ElevatedButton.styleFrom(
@@ -133,36 +132,9 @@ class TodoDetail extends StatelessWidget {
   void _selectAction(String value) {
     switch (value) {
       case menuDelete:
-        _delete();
+        _todoDetailController.deleteTodo();
         break;
       default:
     }
-  }
-
-  void _delete() async {
-    await _todoDetailController.deleteTodo();
-    _back(
-        result: UpdateResult(UpdateStatus.deleted, _todoDetailController.todo));
-  }
-
-  void _save() async {
-    if (_todoDetailController.formKey.currentState!.validate()) {
-      await _todoDetailController.saveTodo();
-
-      if (_todoDetailController.isEditing.value) {
-        _back(
-            result:
-                UpdateResult(UpdateStatus.updated, _todoDetailController.todo));
-      } else {
-        _back(
-            result:
-                UpdateResult(UpdateStatus.created, _todoDetailController.todo));
-      }
-    }
-  }
-
-  void _back(
-      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
-    Get.back(result: result);
   }
 }

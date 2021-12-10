@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:todos/models/todo.dart';
+import 'package:todos/models/update_result.dart';
 import 'package:todos/repositories/todo_repository.dart';
 
 class TodoDetailController extends GetxController {
@@ -19,6 +20,10 @@ class TodoDetailController extends GetxController {
   var isEditing = false.obs;
 
   Todo? _todo;
+
+  Todo? get todo {
+    return _todo;
+  }
 
   @override
   onInit() async {
@@ -60,23 +65,31 @@ class TodoDetailController extends GetxController {
 
   Future deleteTodo() async {
     await _todoRepository.delete(_todo!);
+    back(result: UpdateResult(UpdateStatus.deleted, todo));
   }
 
   Future saveTodo() async {
-    // var now = DateTime.now().toUtc();
+    if (formKey.currentState!.validate()) {
+      if (_todo == null) {
+        _todo = Todo(null, titleController.text, descriptionController.text,
+            priority.value);
+        await _todoRepository.add(_todo!);
+      } else {
+        _todo = Todo(_todo!.id, titleController.text,
+            descriptionController.text, priority.value);
+        await _todoRepository.update(_todo!);
+      }
 
-    if (_todo == null) {
-      _todo = Todo(null, titleController.text, descriptionController.text,
-          priority.value);
-      await _todoRepository.add(_todo!);
-    } else {
-      _todo = Todo(_todo!.id, titleController.text, descriptionController.text,
-          priority.value);
-      await _todoRepository.update(_todo!);
+      if (isEditing.value) {
+        back(result: UpdateResult(UpdateStatus.updated, todo));
+      } else {
+        back(result: UpdateResult(UpdateStatus.created, todo));
+      }
     }
   }
 
-  Todo? get todo {
-    return _todo;
+  void back(
+      {UpdateResult result = const UpdateResult(UpdateStatus.none, null)}) {
+    Get.back(result: result);
   }
 }

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:todos/controllers/auth_controller.dart';
-import 'package:todos/controllers/todo_list_controller.dart';
 import 'package:get/get.dart';
-import 'package:todos/models/update_result.dart';
+import 'package:todos/controllers/todo_list_controller.dart';
 
 class TodoList extends StatelessWidget {
   final _todosListController = Get.find<TodosListController>();
-  final _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +27,7 @@ class TodoList extends StatelessWidget {
               PopupMenuButton(
                 onSelected: (String value) {
                   if (value == 'logout') {
-                    _authController.logOut();
+                    _todosListController.logOut();
                   }
                 },
                 itemBuilder: (BuildContext context) {
@@ -55,7 +52,7 @@ class TodoList extends StatelessWidget {
             child: FittedBox(
               child: FloatingActionButton(
                 onPressed: () {
-                  _navigateToDetails(null);
+                  _todosListController.navigateToDetails(null);
                 },
                 tooltip: 'Add new Todo',
                 child: new Icon(Icons.add),
@@ -89,7 +86,7 @@ class TodoList extends StatelessWidget {
                     fontWeight: FontWeight.bold)),
             // subtitle: Text(todo.date),
             onTap: () {
-              _navigateToDetails(todo.id);
+              _todosListController.navigateToDetails(todo.id);
             },
           ),
         );
@@ -106,44 +103,5 @@ class TodoList extends StatelessWidget {
       default:
         return Colors.red;
     }
-  }
-
-  void _navigateToDetails(String? id) async {
-    UpdateResult result = id == null
-        ? await Get.toNamed('/todos/new')
-        : await Get.toNamed('/todos/$id');
-
-    if (result.status == UpdateStatus.none) {
-      return;
-    }
-
-    var message = '';
-
-    switch (result.status) {
-      case UpdateStatus.created:
-        message = '${result.todo!.title} added.';
-        break;
-      case UpdateStatus.updated:
-        message = '${result.todo!.title} updated.';
-        break;
-      case UpdateStatus.deleted:
-        message = '${result.todo!.title} deleted.';
-        break;
-      default: // Without this, you see a WARNING.
-    }
-
-    Get.showSnackbar(
-      GetBar(
-        messageText: Text(message,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 18)),
-        isDismissible: true,
-        duration: Duration(seconds: 3),
-      ),
-    );
-
-    // _controller.getAll();
   }
 }

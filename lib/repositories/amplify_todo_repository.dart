@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:todos/models/data_event_subscription.dart';
-
 import 'package:todos/models/todo.dart';
 import 'package:todos/models/user.dart';
 import 'package:todos/repositories/todo_repository.dart';

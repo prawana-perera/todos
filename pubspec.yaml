@@ -43,6 +43,7 @@ dependencies:
   json_annotation: ^4.1.0
 
 dev_dependencies:
+  test: any
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.9.1"
@@ -78,6 +79,7 @@ flutter:
   assets:
     - 'assets/images/todos_background.png'
     - 'assets/images/login.png'
+    - 'assets/images/todos_sign_up.png'
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

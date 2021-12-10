@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todos/models/login_result.dart';
 
-import 'auth_controller.dart';
+import '../services/auth_service.dart';
 
 class LoginController extends GetxController {
-  final _authController = Get.find<AuthController>();
+  final _authService = Get.find<AuthService>();
 
   final formKey = GlobalKey<FormState>();
-  var usernameController = TextEditingController();
-  var passwordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  var isLoading = true.obs;
+  var isInvalidUser = false.obs;
+  var isError = false.obs;
 
   var validators = {
     'username': (String? value) {
@@ -35,31 +40,36 @@ class LoginController extends GetxController {
     },
   };
 
-  Rx<bool> get isLoading {
-    return _authController.isLoading;
-  }
+  @override
+  void onReady() async {
+    super.onReady();
 
-  Rx<bool> get isInavalidUser {
-    return _authController.isInavalidUser;
-  }
+    await _authService.checkUserLoggedIn();
 
-  void logIn() async {
-    if (formKey.currentState!.validate()) {
-      Get.dialog(WillPopScope(
-        onWillPop: () async => false,
-        child: Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 10,
-          ),
+    if (_authService.isLoggedIn.value) {
+      Get.offAllNamed('/todos');
+      return;
+    }
+
+    isLoading.value = false;
+
+    final signUpComplete =
+        (Get.parameters['signUpComplete'] ?? 'false') == 'true';
+
+    if (signUpComplete) {
+      final email = Get.parameters['email'];
+      Get.showSnackbar(
+        GetSnackBar(
+          messageText: Text(
+              'Account $email was created successfully, please login.',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18)),
+          isDismissible: true,
+          duration: Duration(seconds: 3),
         ),
-      ));
-
-      // Clear cached login
-      await _authController.logOut();
-      await _authController.logIn(
-          usernameController.text, passwordController.text);
-
-      Get.back();
+      );
     }
   }
 
@@ -69,5 +79,36 @@ class LoginController extends GetxController {
     passwordController.dispose();
 
     super.dispose();
+  }
+
+  Future<void> logIn() async {
+    if (formKey.currentState!.validate()) {
+      isLoading.value = true;
+      isInvalidUser.value = false;
+      isError.value = false;
+
+      var loginResult = await _authService.logIn(
+          usernameController.text, passwordController.text);
+
+      switch (loginResult.status) {
+        case LoginStatus.notAuthorised:
+          isInvalidUser.value = true;
+          isLoading.value = false;
+          break;
+        case LoginStatus.error:
+          isError.value = true;
+          isLoading.value = false;
+          break;
+        case LoginStatus.unconfirmed:
+          await Get.offNamed('/signup/confirm', parameters: {
+            'email': usernameController.text,
+            'isUnconfirmed': 'true'
+          });
+          break;
+        case LoginStatus.success:
+          await Get.offAllNamed('/todos');
+          break;
+      }
+    }
   }
 }
