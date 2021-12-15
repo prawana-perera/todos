@@ -10,7 +10,7 @@ class AuthService extends GetxService {
   var isError = false.obs;
   var loggedInUser = Rx<User?>(null);
 
-  bool get isLoggedIn=> _isLoggedIn.value;
+  bool get isLoggedIn => _isLoggedIn.value;
 
   Future<LoginResult> logIn(String username, String password) async {
     final loginResult = await _authRepository.logIn(username, password);
