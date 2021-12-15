@@ -42,6 +42,11 @@ jobs:
           echo "COGNITO_APP_CLIENT_ID=TBA" >> .env
           echo "COGNITO_AUTH_FLOW_TYPE=TBA" >> .env
           echo "AWS_REGION=TBA" >> .env
+      - name: Show dummy env file
+        run: |
+          pwd
+          ls -al
+          cat .env
       - name: Restore packages
         run: flutter pub get
       - name: Check code lint rules
