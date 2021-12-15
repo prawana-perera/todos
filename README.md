@@ -33,7 +33,7 @@ flutter build appbundle --build-name 1.0.1 --build-number 2
 ```
 
 Android Bundle Tool
-Use it to test APKs locally. Download and add to make it easy to launc:
+Use it to test APKs locally. Download and add to make it easy to launch:
 
 ```shell
 alias bundletool='java -jar <path_to_file>/bundletool-all-1.8.0.jar'

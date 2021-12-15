@@ -41,6 +41,8 @@ dependencies:
 
   flutter_dotenv: ^5.0.2
   json_annotation: ^4.1.0
+  flutter_form_builder: ^7.0.0
+  form_builder_validators: ^7.2.0
 
 dev_dependencies:
   test: any
