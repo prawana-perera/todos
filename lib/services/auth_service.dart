@@ -59,6 +59,7 @@ class AuthService extends GetxService {
       } catch (e) {
         print('AppController._checkAuthenticated: $e');
         isError.value = true;
+        throw e;
       }
     }
   }
