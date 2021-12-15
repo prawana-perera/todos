@@ -45,6 +45,10 @@ jobs:
           echo "COGNITO_APP_CLIENT_ID=$COGNITO_APP_CLIENT_ID" >> .env
           echo "COGNITO_AUTH_FLOW_TYPE=USER_SRP_AUTH" >> .env
           echo "AWS_REGION=ap-southeast-2" >> .env
+        env:
+          APPSYNC_ENDPOINT: ${{ secrets.APPSYNC_ENDPOINT }}
+          COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+          COGNITO_APP_CLIENT_ID: ${{ secrets.COGNITO_APP_CLIENT_ID }}
       - name: Restore packages
         run: flutter pub get
       - name: Check code lint rules
