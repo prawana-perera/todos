@@ -36,12 +36,12 @@ jobs:
           channel: 'stable'
       - name: Generate dummy env file
         run: |
-          echo "APPSYNC_ENDPOINT=TBA" >> .env
-          echo "APPSYNC_AUTHORIZATION_TYPE=TBA" >> .env
-          echo "COGNITO_USER_POOL_ID=TBA" >> .env
-          echo "COGNITO_APP_CLIENT_ID=TBA" >> .env
-          echo "COGNITO_AUTH_FLOW_TYPE=TBA" >> .env
-          echo "AWS_REGION=TBA" >> .env
+          echo "APPSYNC_ENDPOINT=$APPSYNC_ENDPOINT" >> .env
+          echo "APPSYNC_AUTHORIZATION_TYPE=AMAZON_COGNITO_USER_POOLS" >> .env
+          echo "COGNITO_USER_POOL_ID=$COGNITO_USER_POOL_ID" >> .env
+          echo "COGNITO_APP_CLIENT_ID=$COGNITO_APP_CLIENT_ID" >> .env
+          echo "COGNITO_AUTH_FLOW_TYPE=USER_SRP_AUTH" >> .env
+          echo "AWS_REGION=ap-southeast-2" >> .env
       - name: Show dummy env file
         run: |
           pwd
