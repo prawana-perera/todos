@@ -44,6 +44,7 @@ class TodosListController extends GetxController with Authentication {
       }
     } catch (e) {
       debugPrint(e.toString());
+      throw e;
     } finally {
       debugPrint('DONE');
       isLoading(false);
