@@ -16,9 +16,9 @@ class TodosListController extends GetxController with Authentication {
   var isLoading = false.obs;
 
   @override
-  onInit() {
+  onReady() {
+    super.onReady();
     getAll();
-    super.onInit();
   }
 
   @override
@@ -34,6 +34,17 @@ class TodosListController extends GetxController with Authentication {
     try {
       isLoading(true);
       final allTodos = await _todoRepository.getAll();
+      Get.showSnackbar(
+        GetSnackBar(
+          messageText: Text('Got all todos, has length ${allTodos.length}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 14)),
+          isDismissible: true,
+          duration: Duration(seconds: 5),
+        ),
+      );
       print('all todos' + allTodos.toString());
       todos.assignAll(allTodos);
       // TODO: repo query should sort first
@@ -41,9 +52,21 @@ class TodosListController extends GetxController with Authentication {
 
       if (_newTodosSubscription == null) {
         _subscribeToNewTodos();
+        Get.showSnackbar(
+          GetSnackBar(
+            messageText: Text('Subscribed to todo updates',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 14)),
+            isDismissible: true,
+            duration: Duration(seconds: 5),
+          ),
+        );
       }
     } catch (e) {
       debugPrint(e.toString());
+      throw e;
     } finally {
       debugPrint('DONE');
       isLoading(false);

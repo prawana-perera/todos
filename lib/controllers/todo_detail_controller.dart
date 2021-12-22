@@ -57,6 +57,7 @@ class TodoDetailController extends GetxController {
       priority(_todo!.priority);
     } catch (e) {
       debugPrint(e.toString());
+      throw e;
     } finally {
       debugPrint('DONE');
       isLoading(false);

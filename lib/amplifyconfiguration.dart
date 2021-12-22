@@ -30,7 +30,7 @@ String amplifyconfig = '''
             "awsAPIPlugin": {
                 "Todos": {
                     "endpointType": "GraphQL",
-                    "endpoint": "${dotenv.env['APPSYNC_ENDPOINT']}",
+                    "endpoint": "https://uejieq7xnre5ln3eyqlugjzioe.appsync-api.ap-southeast-2.amazonaws.com/graphql",
                     "region": "${dotenv.env['AWS_REGION']}",
                     "authorizationType": "${dotenv.env['APPSYNC_AUTHORIZATION_TYPE']}",
                     "apiKey": "${dotenv.env['APPSYNC_API_KEY']}"
