@@ -34,17 +34,6 @@ class TodosListController extends GetxController with Authentication {
     try {
       isLoading(true);
       final allTodos = await _todoRepository.getAll();
-      Get.showSnackbar(
-        GetSnackBar(
-          messageText: Text('Got all todos, has length ${allTodos.length}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 14)),
-          isDismissible: true,
-          duration: Duration(seconds: 5),
-        ),
-      );
       print('all todos' + allTodos.toString());
       todos.assignAll(allTodos);
       // TODO: repo query should sort first
@@ -52,17 +41,6 @@ class TodosListController extends GetxController with Authentication {
 
       if (_newTodosSubscription == null) {
         _subscribeToNewTodos();
-        Get.showSnackbar(
-          GetSnackBar(
-            messageText: Text('Subscribed to todo updates',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 14)),
-            isDismissible: true,
-            duration: Duration(seconds: 5),
-          ),
-        );
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -93,9 +71,7 @@ class TodosListController extends GetxController with Authentication {
   }
 
   void navigateToDetails(String? id) async {
-    UpdateResult result = id == null
-        ? await Get.toNamed('/todos/new')
-        : await Get.toNamed('/todos/$id');
+    UpdateResult result = id == null ? await Get.toNamed('/todos/new') : await Get.toNamed('/todos/$id');
 
     if (result.status == UpdateStatus.none) {
       return;
@@ -118,11 +94,7 @@ class TodosListController extends GetxController with Authentication {
 
     Get.showSnackbar(
       GetSnackBar(
-        messageText: Text(message,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 18)),
+        messageText: Text(message, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18)),
         isDismissible: true,
         duration: Duration(seconds: 3),
       ),
