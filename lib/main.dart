@@ -66,10 +66,20 @@ class _TodosAppState extends State<TodosApp> {
     return [
       GetPage(name: '/login', page: () => Login(), binding: LoginBinding()),
       GetPage(name: '/signup', page: () => SignUp(), binding: SignUpBinding()),
-      GetPage(name: '/signup/confirm', page: () => SignUpConfirmation(), binding: SignUpConfirmationBinding()),
-      GetPage(name: '/todos', page: () => TodoList(), binding: TodoListBinding()),
-      GetPage(name: '/todos/new', page: () => TodoDetail(), binding: TodoDetailBinding()),
-      GetPage(name: '/todos/:id', page: () => TodoDetail(), binding: TodoDetailBinding())
+      GetPage(
+          name: '/signup/confirm',
+          page: () => SignUpConfirmation(),
+          binding: SignUpConfirmationBinding()),
+      GetPage(
+          name: '/todos', page: () => TodoList(), binding: TodoListBinding()),
+      GetPage(
+          name: '/todos/new',
+          page: () => TodoDetail(),
+          binding: TodoDetailBinding()),
+      GetPage(
+          name: '/todos/:id',
+          page: () => TodoDetail(),
+          binding: TodoDetailBinding())
     ];
   }
 }

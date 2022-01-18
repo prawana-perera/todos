@@ -4,6 +4,7 @@ import 'package:todos/authentication/signup_cofirmation/controllers/signup_confi
 class SignUpConfirmationBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<SignUpConfirmationController>(() => SignUpConfirmationController());
+    Get.lazyPut<SignUpConfirmationController>(
+        () => SignUpConfirmationController());
   }
 }

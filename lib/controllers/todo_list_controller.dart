@@ -71,7 +71,9 @@ class TodosListController extends GetxController with Authentication {
   }
 
   void navigateToDetails(String? id) async {
-    UpdateResult result = id == null ? await Get.toNamed('/todos/new') : await Get.toNamed('/todos/$id');
+    UpdateResult result = id == null
+        ? await Get.toNamed('/todos/new')
+        : await Get.toNamed('/todos/$id');
 
     if (result.status == UpdateStatus.none) {
       return;
@@ -94,7 +96,11 @@ class TodosListController extends GetxController with Authentication {
 
     Get.showSnackbar(
       GetSnackBar(
-        messageText: Text(message, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18)),
+        messageText: Text(message,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18)),
         isDismissible: true,
         duration: Duration(seconds: 3),
       ),
