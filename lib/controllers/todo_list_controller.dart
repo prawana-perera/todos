@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:todos/controllers/mixins/authentication.dart';
+import 'package:todos/common/mixins/authentication.dart';
 import 'package:todos/models/data_event_subscription.dart';
 import 'package:todos/models/todo.dart';
 import 'package:todos/models/update_result.dart';

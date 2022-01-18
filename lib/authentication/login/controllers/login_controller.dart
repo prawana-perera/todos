@@ -35,14 +35,19 @@ class LoginController extends GetxController {
 
     _isLoading.value = false;
 
-    final signUpComplete = (Get.parameters['signUpComplete'] ?? 'false') == 'true';
+    final signUpComplete =
+        (Get.parameters['signUpComplete'] ?? 'false') == 'true';
 
     if (signUpComplete) {
       final email = Get.parameters['email'];
       Get.showSnackbar(
         GetSnackBar(
-          messageText: Text('Account $email was created successfully, please login.',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18)),
+          messageText: Text(
+              'Account $email was created successfully, please login.',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18)),
           isDismissible: true,
           duration: Duration(seconds: 3),
         ),
@@ -73,7 +78,8 @@ class LoginController extends GetxController {
           _isLoading.value = false;
           break;
         case LoginStatus.unconfirmed:
-          await Get.offNamed('/signup/confirm', parameters: {'email': username, 'isUnconfirmed': 'true'});
+          await Get.offNamed('/signup/confirm',
+              parameters: {'email': username, 'isUnconfirmed': 'true'});
           break;
         case LoginStatus.success:
           await Get.offAllNamed('/todos');

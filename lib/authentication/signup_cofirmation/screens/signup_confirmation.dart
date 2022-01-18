@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todos/controllers/signup_confirmation_controller.dart';
+import 'package:todos/authentication/signup_cofirmation/controllers/signup_confirmation_controller.dart';
 
 class SignUpConfirmation extends StatelessWidget {
   final _signupController = Get.find<SignUpConfirmationController>();
@@ -11,9 +11,7 @@ class SignUpConfirmation extends StatelessWidget {
           appBar: AppBar(
               title: Text('Confirm email'),
               leading: IconButton(
-                  onPressed: _signupController.isLoading.value
-                      ? null
-                      : () => Get.offNamed('/login'),
+                  onPressed: _signupController.isLoading.value ? null : () => Get.offNamed('/login'),
                   icon: Icon(Icons.arrow_back))),
           body: SafeArea(
             child: SingleChildScrollView(
@@ -21,8 +19,7 @@ class SignUpConfirmation extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       image: DecorationImage(
-                          colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                           image: AssetImage('assets/images/todos_sign_up.png'),
                           fit: BoxFit.scaleDown)),
                   // height: Get.height,
@@ -63,24 +60,18 @@ class SignUpConfirmation extends StatelessWidget {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
-                                  validator: _signupController
-                                      .validators['confirmCode'],
-                                  controller:
-                                      _signupController.confirmCodeController,
+                                  validator: _signupController.validators['confirmCode'],
+                                  controller: _signupController.confirmCodeController,
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Confirmation code',
                                       hintText: 'Check your email')),
                             ),
                             Visibility(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'An error occurred. Please try again later.',
                                   style: TextStyle(color: Colors.red),
@@ -90,8 +81,7 @@ class SignUpConfirmation extends StatelessWidget {
                             ),
                             Visibility(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'Invalid confirmation code.',
                                   style: TextStyle(color: Colors.red),
@@ -104,18 +94,13 @@ class SignUpConfirmation extends StatelessWidget {
                                 Expanded(
                                     flex: 1,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 10),
+                                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                       child: ElevatedButton.icon(
                                         icon: Icon(Icons.check),
-                                        onPressed:
-                                            _signupController.isLoading.value
-                                                ? null
-                                                : _signupController.confirm,
+                                        onPressed: _signupController.isLoading.value ? null : _signupController.confirm,
                                         label: Text('Confirm'),
                                         style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 15),
+                                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                                           textStyle: TextStyle(fontSize: 20),
                                         ),
                                       ),
@@ -123,20 +108,15 @@ class SignUpConfirmation extends StatelessWidget {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   InkWell(
-                                    onTap: () =>
-                                        _signupController.resendSignUpCode(),
+                                    onTap: () => _signupController.resendSignUpCode(),
                                     child: Text(
                                       "Resend confirmation code",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                          color: Colors.blue),
+                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.blue),
                                     ),
                                   )
                                 ],

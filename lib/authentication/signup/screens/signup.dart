@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todos/controllers/signup_controller.dart';
+import 'package:todos/authentication/signup/controllers/signup_controller.dart';
 
 class SignUp extends StatelessWidget {
   final _signupController = Get.find<SignUpController>();
@@ -11,10 +11,7 @@ class SignUp extends StatelessWidget {
           appBar: AppBar(
             title: Text('Create an account'),
             leading: IconButton(
-                onPressed: _signupController.isLoading.value
-                    ? null
-                    : () => Get.offNamed('/login'),
-                icon: Icon(Icons.arrow_back)),
+                onPressed: _signupController.isLoading.value ? null : () => Get.offNamed('/login'), icon: Icon(Icons.arrow_back)),
           ),
           body: SafeArea(
             child: SingleChildScrollView(
@@ -22,8 +19,7 @@ class SignUp extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       image: DecorationImage(
-                          colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                           image: AssetImage('assets/images/todos_sign_up.png'),
                           fit: BoxFit.scaleDown)),
                   // height: Get.height,
@@ -64,83 +60,58 @@ class SignUp extends StatelessWidget {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
-                                  validator:
-                                      _signupController.validators['username'],
-                                  controller:
-                                      _signupController.usernameController,
+                                  validator: _signupController.validators['username'],
+                                  controller: _signupController.usernameController,
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Email',
-                                      hintText:
-                                          'Enter valid email e.g. abc@abc.com')),
+                                      hintText: 'Enter valid email e.g. abc@abc.com')),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
-                                  validator:
-                                      _signupController.validators['password'],
-                                  controller:
-                                      _signupController.passwordController,
+                                  validator: _signupController.validators['password'],
+                                  controller: _signupController.passwordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Password (8-16)',
                                       hintText: 'Password (8-16)')),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
-                                  validator: _signupController
-                                      .validators['confirmPassword'],
-                                  controller: _signupController
-                                      .confirmPasswordController,
+                                  validator: _signupController.validators['confirmPassword'],
+                                  controller: _signupController.confirmPasswordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Confirm Password',
                                       hintText: 'Password (8-16)')),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
-                                  validator:
-                                      _signupController.validators['name'],
+                                  validator: _signupController.validators['name'],
                                   controller: _signupController.nameController,
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Name',
                                       hintText: 'Your full name')),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: TextFormField(
                                   decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                                       labelText: 'Phonenumber',
-                                      hintText:
-                                          'Your phone number with area code')),
+                                      hintText: 'Your phone number with area code')),
                             ),
                             Visibility(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   _signupController.errorMsg.value,
                                   style: TextStyle(color: Colors.red),
@@ -153,18 +124,13 @@ class SignUp extends StatelessWidget {
                                 Expanded(
                                     flex: 1,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 10),
+                                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                       child: ElevatedButton.icon(
                                         icon: Icon(Icons.add_circle),
-                                        onPressed:
-                                            _signupController.isLoading.value
-                                                ? null
-                                                : _signUp,
+                                        onPressed: _signupController.isLoading.value ? null : _signUp,
                                         label: Text('SignUp'),
                                         style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 15),
+                                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                                           textStyle: TextStyle(fontSize: 20),
                                         ),
                                       ),
@@ -172,8 +138,7 @@ class SignUp extends StatelessWidget {
                               ],
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -182,10 +147,7 @@ class SignUp extends StatelessWidget {
                                     onTap: () => Get.offNamed('/login'),
                                     child: Text(
                                       "Login",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                          color: Colors.blue),
+                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Colors.blue),
                                     ),
                                   )
                                 ],
