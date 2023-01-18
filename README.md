@@ -95,7 +95,7 @@ Code coverage - https://app.codecov.io/gh/prawana-perera/todos
 Sandbox ID
 
 ```
-amplify pull --sandboxId a337cacd-f3fd-4259-975d-8451800cef2c
+amplify pull --sandboxId id
 ```
 
 ### Useful tricks
